@@ -1,7 +1,3 @@
-# Workflows Shared
-
-This repository contains a collection of n8n workflows.
-
 ## Futures Analyst V1
 
 ![Futures Analyst V1 Workflow](Futures%20Analyst%20V1.png)
