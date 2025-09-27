@@ -14,10 +14,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.9,
       "position": [
-        -1760,
-        736
+        240,
+        160
       ],
-      "id": "ac5823eb-e07b-4996-8d99-d8aa10bfddba",
+      "id": "77450441-c1b1-49f7-abda-b50091408b1e",
       "name": "AI Agent",
       "retryOnFail": true,
       "waitBetweenTries": 5000
@@ -33,10 +33,10 @@
       "type": "n8n-nodes-base.dateTimeTool",
       "typeVersion": 2,
       "position": [
-        -1872,
-        960
+        128,
+        384
       ],
-      "id": "ad60e722-6cdc-4f96-8d32-427971aa9c67",
+      "id": "0653fab1-0398-4c80-bb45-fbe87bc1e4b2",
       "name": "Date Time"
     },
     {
@@ -44,10 +44,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolThink",
       "typeVersion": 1,
       "position": [
-        -1744,
-        960
+        256,
+        384
       ],
-      "id": "7fb0eb03-48d0-4eea-b6a7-0dff9631f83f",
+      "id": "ff147153-eb42-4edb-a42a-3432dc2ba0d5",
       "name": "Think"
     },
     {
@@ -55,10 +55,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [
-        -1616,
-        960
+        384,
+        384
       ],
-      "id": "1305f97d-3c1e-420d-a147-afdfe6c0c448",
+      "id": "56b9ef48-9408-462d-853f-5102c9d5ca7b",
       "name": "Calculator"
     },
     {
@@ -71,10 +71,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
       "typeVersion": 1,
       "position": [
-        -2240,
-        960
+        -240,
+        384
       ],
-      "id": "5ece3e80-6c8b-492c-ba7f-7c12a2e5e1c4",
+      "id": "1f3a9571-46d1-466d-9bef-06569babfe9b",
       "name": "Mistral",
       "credentials": {
         "mistralCloudApi": {
@@ -91,10 +91,10 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
       "position": [
-        -2576,
-        592
+        -576,
+        16
       ],
-      "id": "82b216c2-0e26-49ac-a2a0-a9421315514f",
+      "id": "f08c5a3f-6d74-422b-95d5-c5fbd804e40d",
       "name": "Chat",
       "webhookId": "4afbf060-46e6-4d53-b305-5010406e58a7"
     },
@@ -108,10 +108,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -2368,
-        960
+        -368,
+        384
       ],
-      "id": "ba10f607-9ff0-48ca-b9f2-50921db09ef8",
+      "id": "b76166e0-c6d9-45fc-a70b-0826e64a5a58",
       "name": "Gemini",
       "credentials": {
         "googlePalmApi": {
@@ -128,10 +128,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 1,
       "position": [
-        -2352,
-        736
+        -352,
+        160
       ],
-      "id": "6dcd0b24-dd4a-4c19-98bb-791788a0f2c5"
+      "id": "99c0295e-579b-4773-b3af-6002be3aef4e"
     },
     {
       "parameters": {
@@ -146,10 +146,10 @@
       "type": "n8n-nodes-base.mongoDb",
       "typeVersion": 1.2,
       "position": [
-        -1024,
-        432
+        976,
+        -144
       ],
-      "id": "ceaf6610-30ca-4615-9879-e3fbba32459e",
+      "id": "d999d67e-3e08-4030-9954-dd125cffc902",
       "name": "MongoDB Collect",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
@@ -165,10 +165,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        -2000,
-        960
+        0,
+        384
       ],
-      "id": "f8fd112e-99c6-44ce-8a7f-e27ec9d98fcf",
+      "id": "a99184f2-b0b4-4933-83e6-e77b037153ca",
       "name": "Memory",
       "credentials": {
         "postgres": {
@@ -188,10 +188,10 @@
       "type": "n8n-nodes-base.mongoDbTool",
       "typeVersion": 1.2,
       "position": [
-        -1488,
-        960
+        512,
+        384
       ],
-      "id": "6697d5bf-5619-4439-a082-9db2b4ce53ac",
+      "id": "88363c23-3ee1-4fe9-b239-a6a1698394a3",
       "name": "MongoDB Retrieval",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
@@ -209,10 +209,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolSearXng",
       "typeVersion": 1,
       "position": [
-        -1360,
-        960
+        640,
+        384
       ],
-      "id": "f333e5e6-5e2b-41bc-856d-23a46df04b2e",
+      "id": "f3b70160-64f6-4140-b956-a313e2622605",
       "name": "SearXNG",
       "credentials": {
         "searXngApi": {
@@ -236,10 +236,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -2128,
-        960
+        -128,
+        384
       ],
-      "id": "dc994861-d4e5-4c3b-9764-fed5ecf5836f",
+      "id": "66cab2d6-0c2d-4994-a8c9-e7039ef7b4a8",
       "name": "OpenAI",
       "credentials": {
         "openAiApi": {
@@ -257,10 +257,10 @@
       "type": "n8n-nodes-base.mongoDb",
       "typeVersion": 1.2,
       "position": [
-        -2352,
-        432
+        -352,
+        -144
       ],
-      "id": "4c823a45-9174-41b7-abed-f2508317bdd6",
+      "id": "42079e08-a22d-43fe-b9d3-55ad2bb82a01",
       "name": "MongoDB",
       "credentials": {
         "mongoDb": {
@@ -277,18 +277,20 @@
       "type": "@n8n/n8n-nodes-langchain.toolCode",
       "typeVersion": 1.3,
       "position": [
-        -1232,
-        960
+        768,
+        384
       ],
-      "id": "22d92158-3a20-4b06-9197-986d111b8187",
+      "id": "f284fda4-0d79-4327-98fb-684beb66252a",
       "name": "TechnicalIndicators"
     },
     {
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "pM5ZbG4wLRVBCt4C",
-          "mode": "list"
+          "value": "rYB2O6jw5RZWwJCn",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/rYB2O6jw5RZWwJCn",
+          "cachedResultName": "Futures Analyst V1 - Data"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
@@ -350,11 +352,11 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        -1696,
-        432
+        304,
+        -144
       ],
       "name": "Call Futures Analyst V1 - Data",
-      "id": "acb6742f-1073-4906-9933-d88ed43be802"
+      "id": "f525422a-e176-489e-8d94-1c7bbd65a058"
     }
   ],
   "pinData": {},
@@ -463,11 +465,6 @@
         ]
       ]
     },
-    "Mistral": {
-      "ai_languageModel": [
-        []
-      ]
-    },
     "TechnicalIndicators": {
       "ai_tool": [
         [
@@ -490,11 +487,6 @@
         ]
       ]
     },
-    "OpenAI": {
-      "ai_languageModel": [
-        []
-      ]
-    },
     "Gemini": {
       "ai_languageModel": [
         [
@@ -511,11 +503,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "0c3fb666-8ea4-4bf8-b2ed-fe2606703d04",
+  "versionId": "99cd13f9-76e9-43b7-bcca-bb15aa2a8175",
   "meta": {
     "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
   },
-  "id": "WS7Q9b7iAedFgmb0",
+  "id": "VPozty3ByDBiiMCx",
   "tags": [
     {
       "createdAt": "2025-09-26T05:24:50.234Z",
