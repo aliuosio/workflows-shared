@@ -1,0 +1,527 @@
+{
+  "name": "Futures Analyst V1",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# Futures Analyst\n\n> **All output: Bold all values and conclusions. Never add, remove, or reorder sections unless instructed. Use only Technical Indicators given by previous node for calculation; list missing data.**\n\n---\n\n- Be concise. Clearly state any limitations.\n\n---\n\n## 📊 Current Price\n\n- **Price:** {{price}} USD\n- **Datetime:** d:m:y h:m\n- **Timezone:** Europe/Berlin\n\n---\n\n## 📝 Summary\n\n- **Brief:** Clearly state overall sentiment and forecast direction (bullish/bearish/neutral) with a short explanation if needed.\n\n---\n\n## 📈 Price Levels\n\n- **Resistance:** {{resistance_1}}, {{resistance_2}} (**justify using ATR and recent price action**)\n- **Support:** {{support_1}}, {{support_2}} (**justify using ATR and recent price action**)\n\n## 🧱 Buy/Sell Walls\n\n- **Buy Walls:** {{buy_walls}} (**significant buy limit orders below current price**)\n- **Sell Walls:** {{sell_walls}} (**significant sell limit orders above current price**)\n  \n---\n\n## 📊 Sentiment \n> Get Setiment through Internet Search using SearXNG\n\n- **Overall:** 🟢 / 🔴 / ⚪️\n- **Potential Shifts:** Key levels to watch.\n\n---\n\n## 🔍 Analysis\n\n> **write the Interpretaion for the Indicators beside the value**\n\n- **MACD (12,26,9):** {{macd_status}}\n- **EMAs:** {{ema_status}}\n- **RSI (14):** {{rsi_status}}\n- **Bollinger Bands (20,2):** {{bbands_status}}\n- **ATR (14):** {{atr_status}} (**use to guide realistic support/resistance distances**)\n\n---\n\n## 📉 Forecast\n\n- **Direction:** {{forecast_direction}} toward {{target_price}}.\n- **Forecast Horizon:** Valid for the next 4 hours unless otherwise stated.\n\n---\n\n### 📈 Trade Setup\n\n- **Direction:** {{direction}} 🟢/🔴 (**justify direction using trend indicators and recent price action**)\n- **Entry:** {{entry_price}} USD (**confirm within 2% of current price unless strong justification provided**)\n- **Stop Loss:** {{stop_loss}} USD (**set at least 1.5x–2x ATR below/above entry to account for volatility and avoid noise triggers; justify placement using swing lows/highs or technical structure**)\n- **Take Profit:**\n  - **TP1:** {{tp1}} USD (**R:R minimum 1:2; align with nearest resistance/support or swing high/low**)\n  - **TP2:** {{tp2}} USD (**optional; second target for partial profits; justify using resistance levels, Fibonacci extensions, or volume clusters**)\n- **Position Size:** {{position_size}}% (**risk per trade; recommended 1–2% unless high conviction; always adjust for stop distance and volatility**)\n- **Risk Limit:** Max Drawdown: {{max_drawdown}}% (**daily ≤5%, weekly ≤10% recommended**)a",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "# 📊 Crypto Futures Analysis\n\nYou are an **expert Futures analyst**. Use **MongoDB** and the **Technical Indicators Tool**. Provide a concise, justified 4-hour forecast with clear risk management.\n\n---\n\n## 💡 CRITICAL TOOL USAGE WORKFLOW 💡\n\nTo perform technical analysis, you MUST follow this two-step process:\n\n**Step 1: Get Candlestick Data from the Database**\n- Use the `MongoDB Retrieval` tool to get the latest candlestick data.\n- **Query:** `{ \"symbol\": \"THE_SYMBOL_YOU_NEED\", \"endpoint\": \"candlestick\" }`\n- **Example:** For BTC/USDT, you would call `MongoDB Retrieval` with the query `{ \"symbol\": \"BTCUSDT\", \"endpoint\": \"candlestick\" }`.\n\n**Step 2: Calculate Technical Indicators**\n- Take the candlestick data you received from MongoDB.\n- Pass this data to the `TechnicalIndicators` tool.\n- **Input Format:** The tool expects a JSON object with a `candles` key. The value should be an array of candle objects.\n- **Example:** `TechnicalIndicators` tool input: `{ \"candles\": [ { \"timestamp\": 1, \"close\": \"100\", \"high\": \"105\", \"low\": \"99\" }, ... ] }`\n\n**DO NOT call the `TechnicalIndicators` tool directly with a symbol. It will fail. You MUST get the data from MongoDB first.**\n\n---\n\n## Tools Reference\n\n- **MongoDB Retrieval:** Use this to get raw data like candles, trades, order book, etc. Remember to specify the `endpoint`.\n- **TechnicalIndicators:** Use this ONLY after getting candlestick data from MongoDB. It calculates EMAs, MACD, RSI, Bollinger Bands, and ATR.\n- **SearXNG:** For news/sentiment if data is not in MongoDB.\n- **Calculator:** For all mathematical calculations.\n- **Think:** For reasoning and documenting your thought process.\n- **Date Time:** To get the current time.\n\n---\n\n## 📝 Additional Guidelines\n\n- For **support and resistance levels**, always justify them using ATR, swing highs/lows, volume clusters, or other relevant price action.\n- **Bollinger Bands:** The tool provides all three levels (middle, upper, lower).\n- **Forecast Direction:** Always clearly state the **forecast direction** and potential shift scenarios.\n- If using multiple indicators, **explain how each aligns or conflicts with your forecast**.\n- **Trade Recommendations:** Only provide recommendations when signals are clear and multiple indicators align. If conditions are unclear, state to **wait for better confirmation**.\n\n---\n\n## 🛡️ Analyst Principles\n\n- **Probability Focus:** Only trade high-conviction setups.\n- **Data-Driven:** Use MongoDB data.\n- **Documented:** Clearly record trade plans and assumptions.\n",
+          "returnIntermediateSteps": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -1760,
+        736
+      ],
+      "id": "ac5823eb-e07b-4996-8d99-d8aa10bfddba",
+      "name": "AI Agent",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "includeTime": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Include_Current_Time', ``, 'boolean') }}",
+        "outputFieldName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Output_Field_Name', ``, 'string') }}",
+        "options": {
+          "timezone": "Europe/Berlin"
+        }
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        -1872,
+        960
+      ],
+      "id": "ad60e722-6cdc-4f96-8d32-427971aa9c67",
+      "name": "Date Time"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        -1744,
+        960
+      ],
+      "id": "7fb0eb03-48d0-4eea-b6a7-0dff9631f83f",
+      "name": "Think"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        -1616,
+        960
+      ],
+      "id": "1305f97d-3c1e-420d-a147-afdfe6c0c448",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "model": "codestral-latest",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        -2240,
+        960
+      ],
+      "id": "5ece3e80-6c8b-492c-ba7f-7c12a2e5e1c4",
+      "name": "Mistral",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "vLfmgTQBWBINDOxf",
+          "name": "Mistral Cloud account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -2576,
+        592
+      ],
+      "id": "82b216c2-0e26-49ac-a2a0-a9421315514f",
+      "name": "Chat",
+      "webhookId": "4afbf060-46e6-4d53-b305-5010406e58a7"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -2368,
+        960
+      ],
+      "id": "ba10f607-9ff0-48ca-b9f2-50921db09ef8",
+      "name": "Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "cd86rb8vIIPgKJnt",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Crypto Symbol Extractor for n8n\n * \n * This code node sits between Chat Input and AI Agent nodes to:\n * 1. Generate a session ID for conversation tracking\n * 2. Extract cryptocurrency symbols from natural language\n * 3. Pass through the original chat input\n */\n\n/**\n * Generates a unique session ID\n * @returns {string} A unique session identifier\n */\nfunction generateSessionId() {\n  // Timestamp component (milliseconds since epoch)\n  const timestamp = Date.now();\n  \n  // Random component (8 random hex characters)\n  const randomPart = Math.floor(Math.random() * 0xFFFFFFFF).toString(16).padStart(8, '0');\n  \n  // Combine to create a unique ID\n  return `${timestamp.toString(16)}-${randomPart}`;\n}\n\n/**\n * Extracts cryptocurrency information from chat input\n * @param {string} chatInput - The user's chat message\n * @returns {object} Extracted crypto information\n */\nfunction extractCryptoInfo(chatInput) {\n  // Default to Bitcoin if no crypto is mentioned\n  let coinName = 'bitcoin';\n  let quoteAsset = 'USDT';\n  \n  // Common crypto keywords to look for\n  const cryptoKeywords = {\n    'bitcoin': 'BTC',\n    'btc': 'BTC',\n    'ethereum': 'ETH',\n    'eth': 'ETH',\n    'solana': 'SOL',\n    'sol': 'SOL',\n    'cardano': 'ADA',\n    'ada': 'ADA',\n    'ripple': 'XRP',\n    'xrp': 'XRP',\n    'polkadot': 'DOT',\n    'dot': 'DOT',\n    'avalanche': 'AVAX',\n    'avax': 'AVAX',\n    'dogecoin': 'DOGE',\n    'doge': 'DOGE',\n    'shiba': 'SHIB',\n    'shibainu': 'SHIB',\n    'polygon': 'MATIC',\n    'matic': 'MATIC',\n    'litecoin': 'LTC',\n    'ltc': 'LTC',\n    'chainlink': 'LINK',\n    'link': 'LINK',\n    'uniswap': 'UNI',\n    'uni': 'UNI',\n    'binance': 'BNB',\n    'bnb': 'BNB'\n  };\n  \n  // Check if any crypto keywords are in the chat input\n  const normalizedInput = chatInput.toLowerCase();\n  \n  for (const [key, value] of Object.entries(cryptoKeywords)) {\n    if (normalizedInput.includes(key)) {\n      coinName = key;\n      break;\n    }\n  }\n  \n  // Check for quote assets (USDT, BUSD, etc.)\n  const quoteAssets = ['USDT', 'USD', 'BUSD', 'BTC', 'ETH'];\n  for (const quote of quoteAssets) {\n    if (normalizedInput.includes(quote.toLowerCase())) {\n      quoteAsset = quote;\n      break;\n    }\n  }\n  \n  // Get the symbol from the coin name\n  const symbol = cryptoKeywords[coinName] || coinName.toUpperCase();\n  \n  return {\n    coinName,\n    symbol,\n    tradingPair: `${symbol}${quoteAsset}`\n  };\n}\n\n// For use in n8n Code node\nif (typeof items !== 'undefined') {\n  try {\n    // Handle potential missing input by providing defaults\n    // This ensures the node works even if connections are broken\n    let inputData = {};\n    \n    // Try to get data from the incoming items, but don't fail if they're not available\n    if (Array.isArray(items) && items.length > 0 && items[0].json) {\n      inputData = items[0].json;\n    }\n    \n    // Get the chat input with fallback\n    const chatInput = inputData.chatInput || inputData.input || inputData.text || '';\n    \n    // Extract crypto information from the chat input\n    const cryptoInfo = extractCryptoInfo(chatInput);\n    \n    // Generate the output for the AI Agent\n    const result = {\n      sessionId: generateSessionId(),\n      symbol: cryptoInfo.tradingPair,\n      chatInput: chatInput\n    };\n    \n    return [{ json: result }];\n  } catch (error) {\n    // Provide a graceful fallback if anything fails\n    console.log('Error in cryptoSessionTools:', error.message);\n    return [{ json: {\n      sessionId: generateSessionId(),\n      symbol: 'BTCUSDT', // Default to Bitcoin if extraction fails\n      chatInput: '',\n      error: error.message\n    }}];\n  }\n} else {\n  // For standalone testing\n  const testInput = \"Analyze SOL price action for the next 24 hours\";\n  const cryptoInfo = extractCryptoInfo(testInput);\n  \n  console.log(JSON.stringify({\n    sessionId: generateSessionId(),\n    symbol: cryptoInfo.tradingPair,\n    chatInput: testInput\n  }, null, 2));\n}\n"
+      },
+      "name": "SessionTools",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        -2352,
+        736
+      ],
+      "id": "6dcd0b24-dd4a-4c19-98bb-791788a0f2c5"
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "collection": "market",
+        "fields": "timestamp,symbol,endpoint,data\n",
+        "options": {
+          "dateFields": "",
+          "useDotNotation": false
+        }
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.2,
+      "position": [
+        -1024,
+        432
+      ],
+      "id": "ceaf6610-30ca-4615-9879-e3fbba32459e",
+      "name": "MongoDB Collect",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "mongoDb": {
+          "id": "RtSTtpvXSDVGb7GX",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -2000,
+        960
+      ],
+      "id": "f8fd112e-99c6-44ce-8a7f-e27ec9d98fcf",
+      "name": "Memory",
+      "credentials": {
+        "postgres": {
+          "id": "ofiKMFwnVNzbmUyB",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "This node fetches and processes market data for the a trading pair, including real-time price, candlestick (OHLCV) data, funding rates, contract details, recent trades, and order book depth. These are marked with the endpoint name in the structure.\n\nIt supports multiple endpoints such as price, candlestick, funding, historical funding, contract-details, trade-list, and order-book-depth to provide comprehensive market insights for the perpetual contracts.",
+        "collection": "market",
+        "options": {},
+        "query": "={ \"symbol\": \"{{ $json.symbol }}\"}"
+      },
+      "type": "n8n-nodes-base.mongoDbTool",
+      "typeVersion": 1.2,
+      "position": [
+        -1488,
+        960
+      ],
+      "id": "6697d5bf-5619-4439-a082-9db2b4ce53ac",
+      "name": "MongoDB Retrieval",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "mongoDb": {
+          "id": "RtSTtpvXSDVGb7GX",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSearXng",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        960
+      ],
+      "id": "f333e5e6-5e2b-41bc-856d-23a46df04b2e",
+      "name": "SearXNG",
+      "credentials": {
+        "searXngApi": {
+          "id": "GdxVcHHsVzCfazYA",
+          "name": "SearXNG account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini-2025-04-14",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini-2025-04-14"
+        },
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -2128,
+        960
+      ],
+      "id": "dc994861-d4e5-4c3b-9764-fed5ecf5836f",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "gZRvcU8iXT74oZnS",
+          "name": "OpenAi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "collection": "market"
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.2,
+      "position": [
+        -2352,
+        432
+      ],
+      "id": "4c823a45-9174-41b7-abed-f2508317bdd6",
+      "name": "MongoDB",
+      "credentials": {
+        "mongoDb": {
+          "id": "RtSTtpvXSDVGb7GX",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "TechnicalIndicators: Compute MACD, RSI, EMA, Bollinger Bands, and ATR from candlestick data.\nTest with at least 20-30 candles to see RSI values populate.\n",
+        "jsCode": "// Parse the stringified JSON in the query field\nconst data = typeof query === \"string\" ? JSON.parse(query) : query;\nconst candles = data?.candles || [];\n\nif (!Array.isArray(candles) || candles.length === 0) {\n  // Return the error as a string, as required by the tool\n  return JSON.stringify({ error: \"No candle data provided\" });\n}\n\n// --- HELPER FUNCTIONS ---\n\n// EMA calculation\nfunction calculateEMA(data, period) {\n  const k = 2 / (period + 1);\n  let emaArray = new Array(data.length).fill(null);\n  if (data.length < period) return emaArray;\n\n  let sum = 0;\n  for (let i = 0; i < period; i++) {\n    sum += data[i];\n  }\n  let emaPrev = sum / period;\n  emaArray[period - 1] = emaPrev;\n\n  for (let i = period; i < data.length; i++) {\n    let ema = data[i] * k + emaPrev * (1 - k);\n    emaArray[i] = ema;\n    emaPrev = ema;\n  }\n  return emaArray;\n}\n\n// SMA calculation\nfunction calculateSMA(data, period) {\n    let smaArray = new Array(data.length).fill(null);\n    if (data.length < period) return smaArray;\n    for (let i = period - 1; i < data.length; i++) {\n        let sum = 0;\n        for (let j = 0; j < period; j++) {\n            sum += data[i - j];\n        }\n        smaArray[i] = sum / period;\n    }\n    return smaArray;\n}\n\n// Standard Deviation calculation\nfunction calculateStdDev(data, period) {\n    let stdDevArray = new Array(data.length).fill(null);\n    if (data.length < period) return stdDevArray;\n    for (let i = period - 1; i < data.length; i++) {\n        const slice = data.slice(i - period + 1, i + 1);\n        const mean = slice.reduce((a, b) => a + b, 0) / period;\n        const sqDiff = slice.map(value => Math.pow(value - mean, 2));\n        const avgSqDiff = sqDiff.reduce((a, b) => a + b, 0) / period;\n        stdDevArray[i] = Math.sqrt(avgSqDiff);\n    }\n    return stdDevArray;\n}\n\n// Bollinger Bands calculation\nfunction calculateBollingerBands(data, period, stdDevMultiplier) {\n    const middleBand = calculateSMA(data, period);\n    const stdDev = calculateStdDev(data, period);\n    const upperBand = middleBand.map((sma, i) => sma !== null ? sma + stdDev[i] * stdDevMultiplier : null);\n    const lowerBand = middleBand.map((sma, i) => sma !== null ? sma - stdDev[i] * stdDevMultiplier : null);\n    return { middleBand, upperBand, lowerBand };\n}\n\n// RSI calculation\nfunction calculateRSI(data, period) {\n  let rsiArray = new Array(data.length).fill(null);\n  if (data.length <= period) return rsiArray;\n\n  let gains = 0;\n  let losses = 0;\n\n  for (let i = 1; i <= period; i++) {\n    const diff = data[i] - data[i - 1];\n    if (diff >= 0) gains += diff;\n    else losses -= diff;\n  }\n\n  let avgGain = gains / period;\n  let avgLoss = losses / period;\n  let rs = avgGain / avgLoss;\n  rsiArray[period] = 100 - 100 / (1 + rs);\n\n  for (let i = period + 1; i < data.length; i++) {\n    const diff = data[i] - data[i - 1];\n    let gain = diff > 0 ? diff : 0;\n    let loss = diff < 0 ? -diff : 0;\n    avgGain = (avgGain * (period - 1) + gain) / period;\n    avgLoss = (avgLoss * (period - 1) + loss) / period;\n    rs = avgGain / avgLoss;\n    rsiArray[i] = 100 - 100 / (1 + rs);\n  }\n  return rsiArray;\n}\n\n// ATR calculation\nfunction calculateATR(candles, period) {\n    let atrArray = new Array(candles.length).fill(null);\n    if (candles.length <= period) return atrArray;\n\n    let trueRanges = [];\n    for (let i = 1; i < candles.length; i++) {\n        const high = parseFloat(candles[i].high);\n        const low = parseFloat(candles[i].low);\n        const prevClose = parseFloat(candles[i - 1].close);\n        const tr = Math.max(high - low, Math.abs(high - prevClose), Math.abs(low - prevClose));\n        trueRanges.push(tr);\n    }\n\n    let sum = 0;\n    for (let i = 0; i < period; i++) {\n        sum += trueRanges[i];\n    }\n    let atr = sum / period;\n    atrArray[period] = atr;\n\n    for (let i = period; i < trueRanges.length; i++) {\n        atr = (atr * (period - 1) + trueRanges[i]) / period;\n        atrArray[i + 1] = atr;\n    }\n    return atrArray;\n}\n\n// --- DATA PREPARATION & CALCULATION ---\n\nconst closePrices = candles.map(c => parseFloat(c.close));\n\n// Calculate indicators\nconst ema12 = calculateEMA(closePrices, 12);\nconst ema26 = calculateEMA(closePrices, 26);\nconst macd = ema12.map((val, i) => (val !== null && ema26[i] !== null) ? val - ema26[i] : null);\nconst macdSignal = calculateEMA(macd.filter(v => v !== null), 9);\nconst rsi = calculateRSI(closePrices, 14);\nconst bbands = calculateBollingerBands(closePrices, 20, 2);\nconst atr = calculateATR(candles, 14);\n\n// --- COMPOSE OUTPUT ---\n\nconst output = candles.map((c, i) => ({\n  timestamp: c.timestamp,\n  close: parseFloat(c.close),\n  ema12: ema12[i],\n  ema26: ema26[i],\n  macd: macd[i],\n  macdSignal: macdSignal.length > i - (macd.length - macdSignal.length) ? macdSignal[i - (macd.length - macdSignal.length)] : null,\n  rsi: rsi[i],\n  bbands: {\n      middle: bbands.middleBand[i],\n      upper: bbands.upperBand[i],\n      lower: bbands.lowerBand[i]\n  },\n  atr: atr[i]\n}));\n\n// Return the JSON string of output directly, as required by the tool\nreturn JSON.stringify(output);\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        -1232,
+        960
+      ],
+      "id": "22d92158-3a20-4b06-9197-986d111b8187",
+      "name": "TechnicalIndicators"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "pM5ZbG4wLRVBCt4C",
+          "mode": "list"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "pathParams": "={{ $json.pathParams }}",
+            "symbol": "={{ $json.symbol }}",
+            "params": "={{ $json.params }}",
+            "query": "={{ $json.query }}"
+          },
+          "matchingColumns": [
+            "pathParams",
+            "symbol",
+            "params",
+            "query"
+          ],
+          "schema": [
+            {
+              "id": "pathParams",
+              "displayName": "pathParams",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "symbol",
+              "displayName": "symbol",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "params",
+              "displayName": "params",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -1696,
+        432
+      ],
+      "name": "Call Futures Analyst V1 - Data",
+      "id": "acb6742f-1073-4906-9933-d88ed43be802"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Date Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat": {
+      "main": [
+        [
+          {
+            "node": "SessionTools",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MongoDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SessionTools": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB Retrieval": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SearXNG": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB": {
+      "main": [
+        [
+          {
+            "node": "Call Futures Analyst V1 - Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "TechnicalIndicators": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Futures Analyst V1 - Data": {
+      "main": [
+        [
+          {
+            "node": "MongoDB Collect",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0c3fb666-8ea4-4bf8-b2ed-fe2606703d04",
+  "meta": {
+    "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
+  },
+  "id": "WS7Q9b7iAedFgmb0",
+  "tags": [
+    {
+      "createdAt": "2025-09-26T05:24:50.234Z",
+      "updatedAt": "2025-09-26T05:24:50.234Z",
+      "id": "OGUR7X5edzpVLq0x",
+      "name": "Crypto"
+    }
+  ]
+}
