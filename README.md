@@ -24,3 +24,9 @@ The workflow is simple to use but powerful under the hood:
 *   **Smart AI Analysis**: Uses an AI agent with multiple tools to provide a more thorough analysis.
 *   **Easy to Manage**: The workflow is split into logical parts, making it simple to understand and modify.
 *   **Secure**: Keeps all API keys and credentials safe.
+
+---
+
+### Detailed Workflow View
+
+![Detailed Workflow](Futures%20Analyst%20V1%20-%20workflow.png)
