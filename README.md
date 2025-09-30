@@ -1,4 +1,4 @@
-## Futures Analyst V1
+## Futures Analyst
 
 ![Futures Analyst V1 Workflow](media/images/futures-analyst-teaser.jpeg)
 
