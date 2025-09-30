@@ -1,0 +1,697 @@
+{
+  "name": "Futures Analyst",
+  "nodes": [
+    {
+      "parameters": {
+        "includeTime": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Include_Current_Time', ``, 'boolean') }}",
+        "outputFieldName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Output_Field_Name', ``, 'string') }}",
+        "options": {
+          "timezone": "Europe/Berlin"
+        }
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        544
+      ],
+      "id": "940e72e2-f5be-446f-81e2-d91045c2e385",
+      "name": "Date Time"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        544
+      ],
+      "id": "2df968c7-d105-4113-b823-35081599d7a2",
+      "name": "Think"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        544
+      ],
+      "id": "a9b2252b-311c-403f-aabd-0163becd5fc7",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1488,
+        320
+      ],
+      "id": "220dee3e-53eb-4eb3-ad38-dacdf2d52a8d",
+      "name": "Chat",
+      "webhookId": "4afbf060-46e6-4d53-b305-5010406e58a7"
+    },
+    {
+      "parameters": {
+        "description": "TechnicalIndicators: Compute MACD, RSI, and EMA from candlestick data.\nTest with at least 20-30 candles to see RSI values populate.",
+        "jsCode": "// Parse the stringified JSON in the query field\nconst data = typeof query === \"string\" ? JSON.parse(query) : query;\nconst candles = data?.candles || [];\n\nif (!Array.isArray(candles) || candles.length === 0) {\n  return [{ json: { response: JSON.stringify({ error: \"No candle data provided\" }) } }];\n}\n\n// Helper: EMA calculation\nfunction calculateEMA(data, period) {\n  const k = 2 / (period + 1);\n  let emaArray = [];\n  let emaPrev;\n\n  data.forEach((price, i) => {\n    if (i === 0) {\n      emaPrev = price;\n      emaArray.push(emaPrev);\n    } else {\n      let ema = price * k + emaPrev * (1 - k);\n      emaArray.push(ema);\n      emaPrev = ema;\n    }\n  });\n  return emaArray;\n}\n\n// Helper: RSI calculation\nfunction calculateRSI(data, period) {\n  let gains = 0;\n  let losses = 0;\n  let rsiArray = [];\n\n  for (let i = 1; i < data.length; i++) {\n    const diff = data[i] - data[i - 1];\n    if (diff >= 0) {\n      gains += diff;\n    } else {\n      losses -= diff;\n    }\n    if (i === period) {\n      const avgGain = gains / period;\n      const avgLoss = losses / period;\n      let rs = avgGain / avgLoss;\n      let rsi = 100 - 100 / (1 + rs);\n      rsiArray[period] = rsi;\n\n      let prevAvgGain = avgGain;\n      let prevAvgLoss = avgLoss;\n\n      for (let j = period + 1; j < data.length; j++) {\n        const delta = data[j] - data[j - 1];\n        let gain = delta > 0 ? delta : 0;\n        let loss = delta < 0 ? -delta : 0;\n        prevAvgGain = (prevAvgGain * (period - 1) + gain) / period;\n        prevAvgLoss = (prevAvgLoss * (period - 1) + loss) / period;\n        rs = prevAvgGain / prevAvgLoss;\n        rsi = 100 - 100 / (1 + rs);\n        rsiArray[j] = rsi;\n      }\n      break;\n    }\n  }\n  return rsiArray;\n}\n\n// Extract close prices\nconst closePrices = candles.map(c => parseFloat(c.close));\n\n// Calculate indicators\nconst ema12 = calculateEMA(closePrices, 12);\nconst ema26 = calculateEMA(closePrices, 26);\nconst macd = ema12.map((val, i) => (val - (ema26[i] || 0)));\nconst macdSignal = calculateEMA(macd.filter(v => v !== undefined), 9);\nconst rsi = calculateRSI(closePrices, 14);\n\n// Compose output\n\n// Return entire output as JSON string in the 'response' property (string type)\nconst output = candles.map((c, i) => ({\n  timestamp: c.timestamp,\n  close: parseFloat(c.close),\n  ema12: ema12[i] || null,\n  ema26: ema26[i] || null,\n  macd: macd[i] || null,\n  macdSignal: macdSignal[i - (macd.length - macdSignal.length)] || null,\n  rsi: rsi[i] || null,\n}));\n\n// Return the JSON string of output directly:\nreturn JSON.stringify(output);",
+        "specifyInputSchema": true,
+        "jsonSchemaExample": "{\n  \"candles\": [\n    { \"timestamp\": 1, \"close\": \"100\" },\n    { \"timestamp\": 2, \"close\": \"102\" },\n    { \"timestamp\": 3, \"close\": \"105\" },\n    { \"timestamp\": 4, \"close\": \"103\" },\n    { \"timestamp\": 5, \"close\": \"108\" },\n    { \"timestamp\": 6, \"close\": \"110\" },\n    { \"timestamp\": 7, \"close\": \"109\" },\n    { \"timestamp\": 8, \"close\": \"111\" },\n    { \"timestamp\": 9, \"close\": \"112\" },\n    { \"timestamp\": 10, \"close\": \"115\" },\n    { \"timestamp\": 11, \"close\": \"118\" },\n    { \"timestamp\": 12, \"close\": \"120\" },\n    { \"timestamp\": 13, \"close\": \"119\" },\n    { \"timestamp\": 14, \"close\": \"121\" },\n    { \"timestamp\": 15, \"close\": \"123\" },\n    { \"timestamp\": 16, \"close\": \"122\" },\n    { \"timestamp\": 17, \"close\": \"125\" },\n    { \"timestamp\": 18, \"close\": \"127\" },\n    { \"timestamp\": 19, \"close\": \"126\" },\n    { \"timestamp\": 20, \"close\": \"128\" }\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        544
+      ],
+      "id": "07d428a0-2388-41aa-a166-eb764345a978",
+      "name": "TechnicalIndicators"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSearXng",
+      "typeVersion": 1,
+      "position": [
+        192,
+        544
+      ],
+      "id": "05d6a7b0-b4cc-4def-8fb6-4a584d7359ec",
+      "name": "SearXNG",
+      "credentials": {
+        "searXngApi": {
+          "id": "GdxVcHHsVzCfazYA",
+          "name": "SearXNG account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "70363ba9-01e9-4d40-a735-eb588c6bb1d7",
+      "name": "SearXNG1",
+      "type": "@n8n/n8n-nodes-langchain.toolSearXng",
+      "typeVersion": 1,
+      "position": [
+        -1008,
+        544
+      ],
+      "credentials": {
+        "searXngApi": {
+          "id": "GdxVcHHsVzCfazYA",
+          "name": "SearXNG account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Chat').item.json.chatInput }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an information extraction assistant.\nYour job is to identify cryptocurrency coin names and their trading pair symbols from a given text.\nTHAT IS YOUR ONLY JOB\n\nRules:\nAlways return structured JSON.\nJSON must contain both:\nsymbol (e.g., \"SOLUSDT\")\npairing (e.g., \"SOL_USDT\")"
+        }
+      },
+      "id": "1efa3db1-a8bf-4439-a6ce-9d30e5c508a4",
+      "name": "Get Symbol",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1152,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"symbol\": \"SOLUSDT\",\n  \"pairing\": \"SOL_USDT\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -880,
+        544
+      ],
+      "id": "3464639d-f804-4867-91dc-729e4cbf9ab8",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "40176463-b9d4-4e43-bff7-0aee95e0beb5",
+              "name": "symbol",
+              "value": "={{ $json.output.symbol }}",
+              "type": "string"
+            },
+            {
+              "id": "942db944-fb54-4f12-94ff-54654af05aef",
+              "name": "pairing",
+              "value": "={{ $json.output.pairing }}",
+              "type": "string"
+            },
+            {
+              "id": "9f351732-a443-4280-b38d-ba6dc852579a",
+              "name": "kline",
+              "value": "[ { \"interval\": \"4h\",\"limit\": 120 } ]",
+              "type": "array"
+            },
+            {
+              "id": "79be8e51-0a70-4ea3-8936-6067c39642d9",
+              "name": "depth",
+              "value": "=20",
+              "type": "string"
+            },
+            {
+              "id": "0247f8b1-a9d4-422f-9998-6257267d3f5e",
+              "name": "trades",
+              "value": "=500",
+              "type": "string"
+            },
+            {
+              "id": "d5401c30-faf4-4a7d-a081-68976a636909",
+              "name": "funding",
+              "value": "=[{\"pageSize\": 50, \"pageNum\": 1}]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -672,
+        320
+      ],
+      "id": "ff2bc40d-4127-4c95-b6e5-eff0e3504c44",
+      "name": "Set Vars"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        544
+      ],
+      "id": "bb9536e6-0eac-4f62-af05-584921280360",
+      "name": "Gemini Pro",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "cd86rb8vIIPgKJnt",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1264,
+        544
+      ],
+      "id": "58a5a178-3e91-4ccf-a525-bededf4ae309",
+      "name": "Gemini Flash Lite",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "cd86rb8vIIPgKJnt",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=For the specified cryptocurrency {{ $json.symbol }} , produce a **complete 24-hour futures forecast** using **all available tools**. Include:  \n\n1. **Price Breakpoints**  \n   - Identify key **support** and **resistance** levels to monitor over the next 24 hours.  \n\n2. **Market Sentiment (“Air” Analysis)**  \n   - Assess the current market mood and potential shifts.  \n   - Base this on **technical indicators, order book depth, funding rates, trades data, and sentiment/news data**.  \n\n3. **Probability-Based Scenarios**  \n   - Provide percentage probabilities for key outcomes: **breakout, breakdown, or consolidation**.  \n   - Include a simple **distribution curve or probability table** if useful.  \n\n4. **Indicator Analysis**  \n   - Summarize the state of relevant indicators (**RSI, MACD, EMAs, ATR**, order book depth, funding rate, sentiment).  \n   - Explain briefly how each indicator influences the forecast.  \n\n5. **Trading Recommendation**  \n   - Recommend a clear position: **long or short**.  \n   - Suggest **entry point(s)**, **stop-loss**, and **take-profit** levels.  \n   - Ensure all recommendations are logically tied to the indicator analysis.  \n\n**Important Notes:**  \n- I will specify the cryptocurrency (e.g., “Solana”, “BTCUSDT”).  \n- Use **all available tools** to collect the latest market data.  \n- Focus on **accuracy, clarity, and actionable insights**.",
+        "options": {
+          "systemMessage": "You are a highly specialized AI assistant acting as a **Cryptocurrency Futures Trading Analyst**.  \nYour role is to deliver **short-term (4-hour) forecasts** for cryptocurrency futures markets in a **data-driven, objective, and professional** manner.  \n\nYou have access to the following tools and **must use them all whenever relevant** to gather data and perform analysis:  \n\n- `Get_Trades_List`: Get a list of trades.  \n- `Get_Order_Book_Depth`: Get the order book depth.  \n- `Get_Contract_Details`: Get contract details.  \n- `Get_Current_price`: Get the current price of a contract.  \n- `Get_Historical_Funding_Rate`: Get the historical funding rate.  \n- `Get_Funding_Rate`: Get the current funding rate.  \n- `Get_Candlestick_Data`: Get candlestick data.  \n- `searxng-search`: A meta search engine for answering questions about current events.  \n- `TechnicalIndicators`: Compute MACD, RSI, and EMA from candlestick data.  \n- `calculator`: A simple calculator for mathematical expressions.  \n- `thinking_tool`: A tool for complex reasoning and caching information.  \n- `Date_Time`: Manipulate date and time values.  \n\nYour responses must always be:  \n- **Structured** with clearly labeled sections.  \n- **Concise, professional, and actionable**.  \n- Based on the **latest available market data from all tools**.  \n- Include a clear **trading recommendation** (long or short) logically tied to your indicator analysis.  \n\nAlways attempt to **combine insights from all tools** to provide the most accurate and actionable forecast.  \n",
+          "returnIntermediateSteps": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        256,
+        320
+      ],
+      "id": "335285e6-da32-4836-b6da-a6ff84627aa6",
+      "name": "Analyst",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get Candlestick Data",
+        "url": "https://api.mexc.com/api/v3/klines",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.symbol }}"
+            },
+            {
+              "name": "interval",
+              "value": "={{ $json.kline[0].interval }}"
+            },
+            {
+              "name": "limit",
+              "value": "={{ $json.kline[0].limit }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        544
+      ],
+      "id": "5c7abf31-e09b-4aab-b16e-5db74cd88435",
+      "name": "Get Candlestick Data"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get Funding Rate",
+        "url": "=https://contract.mexc.com/api/v1/contract/funding_rate/{{ $json.pairing }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        544
+      ],
+      "id": "ffc47488-7068-476f-a47a-9619dcd302e1",
+      "name": "Get Funding Rate"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get Funding Rate",
+        "url": "=https://contract.mexc.com/api/v1/contract/funding_rate/history",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.symbol }}"
+            },
+            {
+              "name": "page_num",
+              "value": "={{ $json.funding[0].pageNum }}"
+            },
+            {
+              "name": "page_size",
+              "value": "={{ $json.funding[0].pageSize }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        576,
+        544
+      ],
+      "id": "e28d09e4-4914-4424-9d32-6133bd296a88",
+      "name": "Get Historical Funding Rate"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get Current price",
+        "url": "https://api.mexc.com/api/v3/ticker/price",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.symbol }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        704,
+        544
+      ],
+      "id": "25010b7e-80ea-4d9e-af42-b3e1bfe78fdc",
+      "name": "Get Current price"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get Contract Details",
+        "url": "https://contract.mexc.com/api/v1/contract/detail",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.pairing }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        832,
+        544
+      ],
+      "id": "08e9eb14-94ab-4d6c-9a6c-261766ab1bf3",
+      "name": "Get Contract Details"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get Order Book Depth",
+        "url": "https://api.mexc.com/api/v3/depth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.symbol }}"
+            },
+            {
+              "name": "limit",
+              "value": "={{ $json.depth }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        544
+      ],
+      "id": "9549fe77-858c-4000-90d5-8848d3f60f2a",
+      "name": "Get Order Book Depth"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get Trades List",
+        "url": "https://api.mexc.com/api/v3/trades",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.symbol }}"
+            },
+            {
+              "name": "limit",
+              "value": "={{ $json.trades }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1088,
+        544
+      ],
+      "id": "85e83d53-3d17-4396-b5ee-fc695d02de90",
+      "name": "Get Trades List"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "id": "b8dbaab2-4906-4006-9ba3-4d4cccfce11c",
+      "name": "Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -1136,
+        544
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Date Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat": {
+      "main": [
+        [
+          {
+            "node": "Get Symbol",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TechnicalIndicators": {
+      "ai_tool": [
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SearXNG": {
+      "ai_tool": [
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SearXNG1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Get Symbol",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Get Symbol",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Symbol": {
+      "main": [
+        [
+          {
+            "node": "Set Vars",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Vars": {
+      "main": [
+        [
+          {
+            "node": "Analyst",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Flash Lite": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Get Symbol",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Pro": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Candlestick Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Funding Rate": {
+      "ai_tool": [
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Historical Funding Rate": {
+      "ai_tool": [
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Current price": {
+      "ai_tool": [
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contract Details": {
+      "ai_tool": [
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Order Book Depth": {
+      "ai_tool": [
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Trades List": {
+      "ai_tool": [
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Get Symbol",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "90062571-932d-4a1c-890b-6a1df49d0ea8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
+  },
+  "id": "d3MJ2uLGykV0GQyS",
+  "tags": [
+    {
+      "createdAt": "2025-09-26T05:24:50.234Z",
+      "updatedAt": "2025-09-26T05:24:50.234Z",
+      "id": "OGUR7X5edzpVLq0x",
+      "name": "Crypto"
+    }
+  ]
+}
