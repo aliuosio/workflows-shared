@@ -103,7 +103,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -1208,
+        -1216,
         320
       ]
     },
@@ -135,30 +135,6 @@
               "name": "pairing",
               "value": "={{ $json.output.pairing }}",
               "type": "string"
-            },
-            {
-              "id": "9f351732-a443-4280-b38d-ba6dc852579a",
-              "name": "kline",
-              "value": "[ { \"interval\": \"4h\",\"limit\": 120 } ]",
-              "type": "array"
-            },
-            {
-              "id": "79be8e51-0a70-4ea3-8936-6067c39642d9",
-              "name": "depth",
-              "value": "=20",
-              "type": "string"
-            },
-            {
-              "id": "0247f8b1-a9d4-422f-9998-6257267d3f5e",
-              "name": "trades",
-              "value": "=500",
-              "type": "string"
-            },
-            {
-              "id": "d5401c30-faf4-4a7d-a081-68976a636909",
-              "name": "funding",
-              "value": "=[{\"pageSize\": 50, \"pageNum\": 1}]",
-              "type": "array"
             },
             {
               "id": "fbc11b8e-c7b8-44d3-9444-285dded03e9e",
@@ -241,7 +217,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.9,
       "position": [
-        120,
+        128,
         320
       ],
       "id": "335285e6-da32-4836-b6da-a6ff84627aa6",
@@ -251,7 +227,7 @@
     },
     {
       "parameters": {
-        "toolDescription": "Get Candlestick Data",
+        "toolDescription": "Get Candlestick Data\ninterval: 1m, 5m, 15m, 30m, 60m, 4h, 1d, 1W, 1M\nlimit: record count\n\nsymbol parameter is already set. you have to set interval and limit as you wish",
         "url": "https://api.mexc.com/api/v3/klines",
         "sendQuery": true,
         "queryParameters": {
@@ -262,11 +238,11 @@
             },
             {
               "name": "interval",
-              "value": "={{ $json.kline[0].interval }}"
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
             },
             {
               "name": "limit",
-              "value": "={{ $json.kline[0].limit }}"
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters2_Value', ``, 'string') }}"
             }
           ]
         },
@@ -299,7 +275,7 @@
     {
       "parameters": {
         "toolDescription": "Get Funding Rate",
-        "url": "=https://contract.mexc.com/api/v1/contract/funding_rate/history",
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', ``, 'string') }}",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -309,11 +285,11 @@
             },
             {
               "name": "page_num",
-              "value": "={{ $json.funding[0].pageNum }}"
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
             },
             {
               "name": "page_size",
-              "value": "={{ $json.funding[0].pageSize }}"
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters2_Value', ``, 'string') }}"
             }
           ]
         },
@@ -378,7 +354,7 @@
     },
     {
       "parameters": {
-        "toolDescription": "Get Order Book Depth",
+        "toolDescription": "Get Order Book Depth\nlimit: stands for the number of records",
         "url": "https://api.mexc.com/api/v3/depth",
         "sendQuery": true,
         "queryParameters": {
@@ -389,7 +365,7 @@
             },
             {
               "name": "limit",
-              "value": "={{ $json.depth }}"
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
             }
           ]
         },
@@ -406,7 +382,7 @@
     },
     {
       "parameters": {
-        "toolDescription": "Get Trades List",
+        "toolDescription": "Get Trades List\n\nyou only have to pass limit\nsymbol ist set",
         "url": "https://api.mexc.com/api/v3/trades",
         "sendQuery": true,
         "queryParameters": {
@@ -417,7 +393,7 @@
             },
             {
               "name": "limit",
-              "value": "={{ $json.trades }}"
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
             }
           ]
         },
@@ -739,7 +715,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "b542aaa1-570c-4b51-9404-8c0e53937542",
+  "versionId": "30256f37-1c93-433d-abb4-0f289961b34b",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
