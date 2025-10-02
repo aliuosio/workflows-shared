@@ -12,7 +12,7 @@
       "type": "n8n-nodes-base.dateTimeTool",
       "typeVersion": 2,
       "position": [
-        -656,
+        -528,
         320
       ],
       "id": "940e72e2-f5be-446f-81e2-d91045c2e385",
@@ -23,7 +23,7 @@
       "type": "@n8n/n8n-nodes-langchain.toolThink",
       "typeVersion": 1,
       "position": [
-        -528,
+        -400,
         320
       ],
       "id": "2df968c7-d105-4113-b823-35081599d7a2",
@@ -34,7 +34,7 @@
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [
-        -400,
+        -272,
         320
       ],
       "id": "a9b2252b-311c-403f-aabd-0163becd5fc7",
@@ -47,7 +47,7 @@
       "type": "@n8n/n8n-nodes-langchain.toolSearXng",
       "typeVersion": 1,
       "position": [
-        -272,
+        -144,
         320
       ],
       "id": "05d6a7b0-b4cc-4def-8fb6-4a584d7359ec",
@@ -65,7 +65,7 @@
         "text": "={{ $('Chat').item.json.chatInput }}",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are an information extraction assistant.\nYour task: identify cryptocurrency coin names and their trading pair symbols in the provided text.\n\nRules:\n- Return ONLY valid cryptocurrency trading pairs and coin names found in the input.\n- Normalize all outputs to UPPERCASE.\n- Accept common separators between base and quote: '/', '-', '_', whitespace, or none (examples: \"BTCUSDT\", \"BTC/USDT\", \"btc usdt\", \"btc-usdt\").\n- Output fields:\n  - \"symbol\": concatenation of BASE and QUOTE with no separator (e.g., \"SOLUSDT\").\n  - \"pairing\": BASE and QUOTE separated by an underscore (e.g., \"SOL_USDT\").\n- If multiple pairs are found, return an ARRAY of objects (order preserved from the input).\n- If no valid trading pair is found, return a single-item array with nulls:  \n  `[ { \"symbol\": null, \"pairing\": null } ]`\n- DO NOT include any extra text, explanation, or metadata outside the JSON array.\n- Do not attempt lookups; rely only on patterns in the provided text.\n\nExact output example (must be JSON only):\n\n[\n  { \"symbol\": \"SOLUSDT\", \"pairing\": \"SOL_USDT\" },\n  { \"symbol\": \"BTCUSDT\", \"pairing\": \"BTC_USDT\" }\n]\n"
+          "systemMessage": "You are an information extraction assistant.\nYour task: identify cryptocurrency symbol and trading pair symbols in the provided text or just coin name\n\nRules:\n- Return ONLY valid cryptocurrency trading pairs and coin names found in the input.\n- Normalize all outputs to UPPERCASE.\n- Accept common separators between base and quote: '/', '-', '_', whitespace, or none (examples: \"BTCUSDT\", \"BTC/USDT\", \"btc usdt\", \"btc-usdt\").\n- Output fields:\n  - \"symbol\": concatenation of BASE and QUOTE with no separator (e.g., \"SOLUSDT\").\n  - \"pairing\": BASE and QUOTE separated by an underscore (e.g., \"SOL_USDT\").\n- If multiple pairs are found, return an ARRAY of objects (order preserved from the input).\n- If no valid trading pair is found, return a single-item array with nulls:  \n  `[ { \"symbol\": null, \"pairing\": null } ]`\n- DO NOT include any extra text, explanation, or metadata outside the JSON array.\n- Do not attempt lookups; rely only on patterns in the provided text.\n\nNOTE:\nmake sure that USDT is always in the valeu at the end"
         }
       },
       "id": "1efa3db1-a8bf-4439-a6ce-9d30e5c508a4",
@@ -73,7 +73,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -1416,
+        -1360,
         96
       ]
     },
@@ -84,7 +84,7 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -1216,
+        -1088,
         320
       ],
       "id": "3464639d-f804-4867-91dc-729e4cbf9ab8",
@@ -125,7 +125,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1008,
+        -880,
         96
       ],
       "id": "ff2bc40d-4127-4c95-b6e5-eff0e3504c44",
@@ -135,7 +135,7 @@
       "parameters": {
         "modelName": "models/gemini-2.5-flash-lite",
         "options": {
-          "temperature": 0.1
+          "temperature": 0.3
         }
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
@@ -165,7 +165,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.9,
       "position": [
-        -152,
+        -32,
         96
       ],
       "id": "335285e6-da32-4836-b6da-a6ff84627aa6",
@@ -199,7 +199,7 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        -144,
+        -16,
         320
       ],
       "id": "5c7abf31-e09b-4aab-b16e-5db74cd88435",
@@ -214,7 +214,7 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        -16,
+        112,
         320
       ],
       "id": "ffc47488-7068-476f-a47a-9619dcd302e1",
@@ -246,7 +246,7 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        112,
+        240,
         320
       ],
       "id": "e28d09e4-4914-4424-9d32-6133bd296a88",
@@ -270,7 +270,7 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        240,
+        368,
         320
       ],
       "id": "25010b7e-80ea-4d9e-af42-b3e1bfe78fdc",
@@ -294,7 +294,7 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        368,
+        496,
         320
       ],
       "id": "08e9eb14-94ab-4d6c-9a6c-261766ab1bf3",
@@ -322,7 +322,7 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        496,
+        624,
         320
       ],
       "id": "9549fe77-858c-4000-90d5-8848d3f60f2a",
@@ -350,7 +350,7 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        624,
+        752,
         320
       ],
       "id": "85e83d53-3d17-4396-b5ee-fc695d02de90",
@@ -367,7 +367,8 @@
       "position": [
         -1344,
         320
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -384,8 +385,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -784,
-        320
+        -1696,
+        432
       ],
       "id": "36c6a074-13dd-4afd-b429-413f0c05a124",
       "name": "OpenAI",
@@ -394,7 +395,8 @@
           "id": "gZRvcU8iXT74oZnS",
           "name": "OpenAi account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -407,7 +409,7 @@
       "typeVersion": 1,
       "position": [
         -1696,
-        424
+        640
       ],
       "id": "2e75747e-01d0-45fd-85b0-6d689cf88c3c",
       "name": "Mistral",
@@ -428,7 +430,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1280,
+        1408,
         192
       ],
       "id": "c08cb58d-6b7b-4900-8667-8cc2571cb9bf",
@@ -536,7 +538,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1504,
+        1632,
         192
       ],
       "id": "ba62bfa4-fdd3-44af-9001-936ab9b0d818",
@@ -561,7 +563,7 @@
       "type": "@n8n/n8n-nodes-langchain.chat",
       "typeVersion": 1,
       "position": [
-        832,
+        960,
         0
       ],
       "id": "f68ab664-454d-44c3-8bd6-97cb9b99c1ab",
@@ -575,7 +577,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        832,
+        960,
         192
       ],
       "id": "cf1747ac-8212-44c4-9a17-c891bf00e945",
@@ -605,7 +607,7 @@
       "type": "@n8n/n8n-nodes-langchain.chat",
       "typeVersion": 1,
       "position": [
-        1056,
+        1184,
         192
       ],
       "id": "9fd2dd17-3b9e-4be8-9721-b817ab80ca47",
@@ -621,8 +623,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -1696,
-        632
+        -656,
+        320
       ],
       "id": "bb9536e6-0eac-4f62-af05-584921280360",
       "name": "Gemini",
@@ -631,8 +633,26 @@
           "id": "cd86rb8vIIPgKJnt",
           "name": "Google Gemini(PaLM) Api account"
         }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
       },
-      "disabled": true
+      "type": "@n8n/n8n-nodes-langchain.toolSearXng",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        320
+      ],
+      "id": "5ded2357-05c1-4a08-8626-67509d3a6cc9",
+      "name": "SearXNG1",
+      "credentials": {
+        "searXngApi": {
+          "id": "GdxVcHHsVzCfazYA",
+          "name": "SearXNG account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -815,13 +835,7 @@
     },
     "OpenAI": {
       "ai_languageModel": [
-        [
-          {
-            "node": "Analyst",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Mistral": {
@@ -896,12 +910,29 @@
     },
     "Gemini": {
       "ai_languageModel": [
-        []
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
       ]
     },
     "Save Trade": {
       "main": [
         []
+      ]
+    },
+    "SearXNG1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Get Symbol",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
       ]
     }
   },
@@ -909,7 +940,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8208405b-1dee-4b44-bb51-84fbe88d05ee",
+  "versionId": "f1d30fed-af3f-42a5-a37c-5958be8cf640",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
