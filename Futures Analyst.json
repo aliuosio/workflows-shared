@@ -42,6 +42,9 @@
     },
     {
       "parameters": {
+        "public": true,
+        "authentication": "basicAuth",
+        "initialMessages": "",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
@@ -52,7 +55,13 @@
       ],
       "id": "220dee3e-53eb-4eb3-ad38-dacdf2d52a8d",
       "name": "Chat",
-      "webhookId": "4afbf060-46e6-4d53-b305-5010406e58a7"
+      "webhookId": "4afbf060-46e6-4d53-b305-5010406e58a7",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "8cDSwMOWXSbvHuR3",
+          "name": "Unnamed credential"
+        }
+      }
     },
     {
       "parameters": {
@@ -64,8 +73,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolCode",
       "typeVersion": 1.2,
       "position": [
-        -400,
-        704
+        -1488,
+        1072
       ],
       "id": "07d428a0-2388-41aa-a166-eb764345a978",
       "name": "TechnicalIndicators"
@@ -171,8 +180,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -576,
-        544
+        32,
+        784
       ],
       "id": "bb9536e6-0eac-4f62-af05-584921280360",
       "name": "Gemini Pro",
@@ -274,8 +283,8 @@
     },
     {
       "parameters": {
-        "toolDescription": "Get Historical Funding Rate\n\nNote:\nyou only have to pass page_num and page_size as parameters\nsymbol is set automatically by n8n node",
-        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', ``, 'string') }}",
+        "toolDescription": "Get Historical Funding Rate\npass parameters page_num and page_size\nsymbol is automatically set\nNote:\nyou only have to pass page_num and page_size as parameters\nsymbol is set automatically by n8n node",
+        "url": "https://contract.mexc.com/api/v1/contract/funding_rate/history",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -354,7 +363,7 @@
     },
     {
       "parameters": {
-        "toolDescription": "Get Order Book Depth\nlimit: stands for the number of records",
+        "toolDescription": "Get Order Book Depth\nOnly pass limit as parameter\nlimit: stands for the number of records",
         "url": "https://api.mexc.com/api/v3/depth",
         "sendQuery": true,
         "queryParameters": {
@@ -436,8 +445,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -768,
-        544
+        -224,
+        784
       ],
       "id": "36c6a074-13dd-4afd-b429-413f0c05a124",
       "name": "OpenAI",
@@ -459,8 +468,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
       "typeVersion": 1,
       "position": [
-        -592,
-        704
+        -96,
+        784
       ],
       "id": "2e75747e-01d0-45fd-85b0-6d689cf88c3c",
       "name": "Mistral",
@@ -709,13 +718,18 @@
           }
         ]
       ]
+    },
+    "Analyst": {
+      "main": [
+        []
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "acce7f12-7a25-482b-a68e-31a14a6b9a46",
+  "versionId": "ea4047bf-e0f7-4b18-887f-61d146282476",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
