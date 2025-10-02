@@ -1,3 +1,3 @@
 ## Workflows
 
-- [Futures Analyst](./Futures%20Analyst.md)
+- [Futures Analyst](./Futures-Analyst.md)
