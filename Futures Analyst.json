@@ -12,8 +12,8 @@
       "type": "n8n-nodes-base.dateTimeTool",
       "typeVersion": 2,
       "position": [
-        -320,
-        544
+        -656,
+        352
       ],
       "id": "940e72e2-f5be-446f-81e2-d91045c2e385",
       "name": "Date Time"
@@ -23,8 +23,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolThink",
       "typeVersion": 1,
       "position": [
-        -192,
-        544
+        -528,
+        352
       ],
       "id": "2df968c7-d105-4113-b823-35081599d7a2",
       "name": "Think"
@@ -34,34 +34,11 @@
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [
-        -64,
-        544
+        -400,
+        352
       ],
       "id": "a9b2252b-311c-403f-aabd-0163becd5fc7",
       "name": "Calculator"
-    },
-    {
-      "parameters": {
-        "public": true,
-        "authentication": "basicAuth",
-        "initialMessages": "",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
-      "typeVersion": 1.1,
-      "position": [
-        -1488,
-        320
-      ],
-      "id": "220dee3e-53eb-4eb3-ad38-dacdf2d52a8d",
-      "name": "Chat",
-      "webhookId": "4afbf060-46e6-4d53-b305-5010406e58a7",
-      "credentials": {
-        "httpBasicAuth": {
-          "id": "8cDSwMOWXSbvHuR3",
-          "name": "Unnamed credential"
-        }
-      }
     },
     {
       "parameters": {
@@ -73,8 +50,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolCode",
       "typeVersion": 1.2,
       "position": [
-        -1488,
-        1072
+        -1696,
+        880
       ],
       "id": "07d428a0-2388-41aa-a166-eb764345a978",
       "name": "TechnicalIndicators"
@@ -86,8 +63,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolSearXng",
       "typeVersion": 1,
       "position": [
-        64,
-        544
+        -272,
+        352
       ],
       "id": "05d6a7b0-b4cc-4def-8fb6-4a584d7359ec",
       "name": "SearXNG",
@@ -112,8 +89,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -1216,
-        320
+        -1424,
+        128
       ]
     },
     {
@@ -123,8 +100,8 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -1008,
-        544
+        -1216,
+        352
       ],
       "id": "3464639d-f804-4867-91dc-729e4cbf9ab8",
       "name": "Structured Output Parser"
@@ -164,8 +141,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -800,
-        320
+        -1008,
+        128
       ],
       "id": "ff2bc40d-4127-4c95-b6e5-eff0e3504c44",
       "name": "Set Vars"
@@ -180,8 +157,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        32,
-        784
+        -784,
+        352
       ],
       "id": "bb9536e6-0eac-4f62-af05-584921280360",
       "name": "Gemini Pro",
@@ -202,8 +179,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -1264,
-        544
+        -1472,
+        352
       ],
       "id": "58a5a178-3e91-4ccf-a525-bededf4ae309",
       "name": "Gemini Flash Lite",
@@ -226,8 +203,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.9,
       "position": [
-        128,
-        320
+        -160,
+        128
       ],
       "id": "335285e6-da32-4836-b6da-a6ff84627aa6",
       "name": "Analyst",
@@ -260,8 +237,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        192,
-        544
+        -144,
+        352
       ],
       "id": "5c7abf31-e09b-4aab-b16e-5db74cd88435",
       "name": "Get Candlestick Data"
@@ -275,8 +252,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        320,
-        544
+        -16,
+        352
       ],
       "id": "ffc47488-7068-476f-a47a-9619dcd302e1",
       "name": "Get Funding Rate"
@@ -307,8 +284,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        448,
-        544
+        112,
+        352
       ],
       "id": "e28d09e4-4914-4424-9d32-6133bd296a88",
       "name": "Get Historical Funding Rate"
@@ -331,8 +308,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        576,
-        544
+        240,
+        352
       ],
       "id": "25010b7e-80ea-4d9e-af42-b3e1bfe78fdc",
       "name": "Get Current price"
@@ -355,8 +332,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        704,
-        544
+        368,
+        352
       ],
       "id": "08e9eb14-94ab-4d6c-9a6c-261766ab1bf3",
       "name": "Get Contract Details"
@@ -383,8 +360,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        832,
-        544
+        496,
+        352
       ],
       "id": "9549fe77-858c-4000-90d5-8848d3f60f2a",
       "name": "Get Order Book Depth"
@@ -411,8 +388,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        960,
-        544
+        624,
+        352
       ],
       "id": "85e83d53-3d17-4396-b5ee-fc695d02de90",
       "name": "Get Trades List"
@@ -426,8 +403,8 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -1136,
-        544
+        -1344,
+        352
       ]
     },
     {
@@ -445,8 +422,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -224,
-        784
+        -1696,
+        464
       ],
       "id": "36c6a074-13dd-4afd-b429-413f0c05a124",
       "name": "OpenAI",
@@ -468,8 +445,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
       "typeVersion": 1,
       "position": [
-        -96,
-        784
+        -1696,
+        672
       ],
       "id": "2e75747e-01d0-45fd-85b0-6d689cf88c3c",
       "name": "Mistral",
@@ -482,15 +459,160 @@
       "disabled": true
     },
     {
-      "parameters": {},
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE IF NOT EXISTS public.trades (\n\tid int GENERATED ALWAYS AS IDENTITY NOT NULL,\n\tprice decimal NOT NULL,\n\trecommendation text NOT NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tCONSTRAINT trades_pk PRIMARY KEY (id)\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1280,
+        128
+      ],
+      "id": "c08cb58d-6b7b-4900-8667-8cc2571cb9bf",
+      "name": "Table Trades Creation",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "postgres": {
+          "id": "ofiKMFwnVNzbmUyB",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "trades",
+          "mode": "list",
+          "cachedResultName": "trades"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "price": "={{ $('Get Price And Recommendation').item.json.dbRecord.price }}",
+            "recommendation": "={{ $('Get Price And Recommendation').item.json.dbRecord.recommendation }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "price",
+              "displayName": "price",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recommendation",
+              "displayName": "recommendation",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1504,
+        128
+      ],
+      "id": "ba62bfa4-fdd3-44af-9001-936ab9b0d818",
+      "name": "Save Trade",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "postgres": {
+          "id": "ofiKMFwnVNzbmUyB",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "message": "={{ $('Analyst').item.json.output }}",
+        "waitUserReply": false,
+        "options": {
+          "memoryConnection": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        832,
+        128
+      ],
+      "id": "f68ab664-454d-44c3-8bd6-97cb9b99c1ab",
+      "name": "Respond to Chat",
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input text from previous node\nconst forecastText = $('Analyst').first().json.output;\n\n// Extract current price\nconst priceMatch = forecastText.match(/\\*\\*Current Price \\(MEXC\\):\\*\\*\\s*(\\d+(\\.\\d+)?)/i);\nconst price = priceMatch ? parseFloat(priceMatch[1]) : null;\n\n// Extract Trading Recommendation block\nconst tradingRecMatch = forecastText.match(/Trading Recommendation([\\s\\S]*?)⚠️ Risk & Edge Cases/);\nconst recommendation = tradingRecMatch ? tradingRecMatch[1].trim() : null;\n\n// Save extracted data to DB by returning it as separate fields (for a DB node to pick up)\nconst dbRecord = {\n  price,\n  recommendation\n};\n\n// Return full text to the chat window\nreturn [\n  {\n    json: {\n      dbRecord                   // this can be used in subsequent nodes to save to DB\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1056,
+        128
+      ],
+      "id": "cf1747ac-8212-44c4-9a17-c891bf00e945",
+      "name": "Get Price And Recommendation"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseMode": "responseNodes"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.3,
       "position": [
-        -448,
-        544
+        -1696,
+        128
       ],
-      "id": "03f79832-f278-4783-b81f-65c42ba178f1",
-      "name": "Memory1"
+      "id": "7065f56b-b9c9-4031-88b0-bc0682c5f015",
+      "name": "Chat",
+      "webhookId": "81de5df4-57cb-4b2c-bdbc-5855db4fafec"
     }
   ],
   "pinData": {},
@@ -523,17 +645,6 @@
           {
             "node": "Analyst",
             "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Chat": {
-      "main": [
-        [
-          {
-            "node": "Get Symbol",
-            "type": "main",
             "index": 0
           }
         ]
@@ -708,20 +819,59 @@
         []
       ]
     },
-    "Memory1": {
-      "ai_memory": [
+    "Analyst": {
+      "main": [
         [
           {
-            "node": "Analyst",
-            "type": "ai_memory",
+            "node": "Respond to Chat",
+            "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Analyst": {
+    "Table Trades Creation": {
       "main": [
-        []
+        [
+          {
+            "node": "Save Trade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Chat": {
+      "main": [
+        [
+          {
+            "node": "Get Price And Recommendation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Price And Recommendation": {
+      "main": [
+        [
+          {
+            "node": "Table Trades Creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat": {
+      "main": [
+        [
+          {
+            "node": "Get Symbol",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
@@ -729,7 +879,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "ea4047bf-e0f7-4b18-887f-61d146282476",
+  "versionId": "12596ca8-41dc-4b72-87be-e4d6cf0cdee9",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
