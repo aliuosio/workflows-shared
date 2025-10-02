@@ -73,7 +73,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -1360,
+        -1352,
         96
       ]
     },
@@ -165,7 +165,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.9,
       "position": [
-        -32,
+        -24,
         96
       ],
       "id": "335285e6-da32-4836-b6da-a6ff84627aa6",
@@ -255,13 +255,13 @@
     {
       "parameters": {
         "toolDescription": "Get Current price",
-        "url": "https://api.mexc.com/api/v3/ticker/price",
+        "url": "https://contract.mexc.com/api/v1/contract/ticker",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
             {
               "name": "symbol",
-              "value": "={{ $json.symbol }}"
+              "value": "={{ $json.pairing }}"
             }
           ]
         },
@@ -385,7 +385,7 @@
       "typeVersion": 1.2,
       "position": [
         -1696,
-        432
+        632
       ],
       "id": "36c6a074-13dd-4afd-b429-413f0c05a124",
       "name": "OpenAI",
@@ -394,7 +394,8 @@
           "id": "gZRvcU8iXT74oZnS",
           "name": "OpenAi account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -406,8 +407,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
       "typeVersion": 1,
       "position": [
-        -1696,
-        640
+        -656,
+        320
       ],
       "id": "2e75747e-01d0-45fd-85b0-6d689cf88c3c",
       "name": "Mistral",
@@ -416,8 +417,7 @@
           "id": "vLfmgTQBWBINDOxf",
           "name": "Mistral Cloud account"
         }
-      },
-      "disabled": true
+      }
     },
     {
       "parameters": {
@@ -621,8 +621,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -656,
-        320
+        -1696,
+        424
       ],
       "id": "bb9536e6-0eac-4f62-af05-584921280360",
       "name": "Gemini",
@@ -834,6 +834,11 @@
     },
     "OpenAI": {
       "ai_languageModel": [
+        []
+      ]
+    },
+    "Mistral": {
+      "ai_languageModel": [
         [
           {
             "node": "Analyst",
@@ -841,11 +846,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "Mistral": {
-      "ai_languageModel": [
-        []
       ]
     },
     "Analyst": {
@@ -939,7 +939,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "27570c41-dbe2-45a3-86a7-0b533d947094",
+  "versionId": "bbc55b32-78e7-4e5d-ba8d-8c9eb6839f9d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
