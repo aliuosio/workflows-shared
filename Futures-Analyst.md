@@ -2,7 +2,7 @@
 
 ![Futures Analyst V1 Workflow](media/images/futures-analyst-teaser.jpeg)
 
-The main purpose of the "Futures Analyst V1" workflow is to automatically generate a **futures trade recommendation** for cryptocurrencies. You can ask it for an analysis in plain English (like "what's the forecast for Bitcoin?"), and it delivers a complete trade setup.
+Tthe "Futures Analyst " workflow  generates a futures trade recommendation for cryptocurrencies. You can ask it for an analysis (like "what's the forecast for Bitcoin?"), and it delivers a complete trade setup.
 
 ### How It Works
 
