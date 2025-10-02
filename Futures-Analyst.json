@@ -65,7 +65,7 @@
         "text": "={{ $('Chat').item.json.chatInput }}",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are an information extraction assistant.\nYour task: identify cryptocurrency symbol and trading pair symbols in the provided text or just coin name\n\nRules:\n- Return ONLY valid cryptocurrency trading pairs and coin names found in the input.\n- Normalize all outputs to UPPERCASE.\n- Accept common separators between base and quote: '/', '-', '_', whitespace, or none (examples: \"BTCUSDT\", \"BTC/USDT\", \"btc usdt\", \"btc-usdt\").\n- Output fields:\n  - \"symbol\": concatenation of BASE and QUOTE with no separator (e.g., \"SOLUSDT\").\n  - \"pairing\": BASE and QUOTE separated by an underscore (e.g., \"SOL_USDT\").\n- If multiple pairs are found, return an ARRAY of objects (order preserved from the input).\n- If no valid trading pair is found, return a single-item array with nulls:  \n  `[ { \"symbol\": null, \"pairing\": null } ]`\n- DO NOT include any extra text, explanation, or metadata outside the JSON array.\n- Do not attempt lookups; rely only on patterns in the provided text.\n\nNOTE:\nmake sure that USDT is always in the valeu at the end"
+          "systemMessage": "You are an information extraction assistant with access to a **SearxXNG tool node** in n8n. Your task is to identify cryptocurrency symbols and trading pair symbols in the provided text, or just the coin name.\nUse searcth toool to get valid oparings\n\n**Rules:**  \n- Return **ONLY** valid cryptocurrency trading pairs and coin names found in the input.  \n- Normalize all outputs to **UPPERCASE**.  \n- Accept common separators between base and quote: `/`, `-`, `_`, whitespace, or none. Examples: `BTCUSDT`, `BTC/USDT`, `btc usdt`, `btc-usdt`.  \n\nOutput fields:  \n- `\"symbol\"`: concatenation of BASE and QUOTE with **no separator** (e.g., `\"SOLUSDT\"`).  \n- `\"pairing\"`: BASE and QUOTE separated by an **underscore** (e.g., `\"SOL_USDT\"`).  \n- Ensure **USDT is always the quote** at the end of the symbol.  \n- If multiple pairs are found, return an **ARRAY of objects** in the order they appear in the text.  \n- If no valid trading pair is found, return a **single-item array with nulls**:  \n   \n Do NOT include any extra text, explanation, or metadata outside the JSON array."
         }
       },
       "id": "1efa3db1-a8bf-4439-a6ce-9d30e5c508a4",
@@ -367,8 +367,7 @@
       "position": [
         -1344,
         320
-      ],
-      "disabled": true
+      ]
     },
     {
       "parameters": {
@@ -395,8 +394,7 @@
           "id": "gZRvcU8iXT74oZnS",
           "name": "OpenAi account"
         }
-      },
-      "disabled": true
+      }
     },
     {
       "parameters": {
@@ -633,7 +631,8 @@
           "id": "cd86rb8vIIPgKJnt",
           "name": "Google Gemini(PaLM) Api account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -835,7 +834,13 @@
     },
     "OpenAI": {
       "ai_languageModel": [
-        []
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
       ]
     },
     "Mistral": {
@@ -910,13 +915,7 @@
     },
     "Gemini": {
       "ai_languageModel": [
-        [
-          {
-            "node": "Analyst",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Save Trade": {
@@ -940,7 +939,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "f1d30fed-af3f-42a5-a37c-5958be8cf640",
+  "versionId": "27570c41-dbe2-45a3-86a7-0b533d947094",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
