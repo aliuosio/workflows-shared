@@ -65,7 +65,7 @@
         "text": "={{ $('Chat').item.json.chatInput }}",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are an information extraction assistant.\nYour job is to identify cryptocurrency coin names and their trading pair symbols from a given text.\nTHAT IS YOUR ONLY JOB\n\nRules:\nAlways return structured JSON.\nJSON must contain both:\nsymbol (e.g., \"SOLUSDT\")\npairing (e.g., \"SOL_USDT\")"
+          "systemMessage": "You are an information extraction assistant.\nYour task: identify cryptocurrency coin names and their trading pair symbols in the provided text.\n\nRules:\n- Return ONLY valid cryptocurrency trading pairs and coin names found in the input.\n- Normalize all outputs to UPPERCASE.\n- Accept common separators between base and quote: '/', '-', '_', whitespace, or none (examples: \"BTCUSDT\", \"BTC/USDT\", \"btc usdt\", \"btc-usdt\").\n- Output fields:\n  - \"symbol\": concatenation of BASE and QUOTE with no separator (e.g., \"SOLUSDT\").\n  - \"pairing\": BASE and QUOTE separated by an underscore (e.g., \"SOL_USDT\").\n- If multiple pairs are found, return an ARRAY of objects (order preserved from the input).\n- If no valid trading pair is found, return a single-item array with nulls:  \n  `[ { \"symbol\": null, \"pairing\": null } ]`\n- DO NOT include any extra text, explanation, or metadata outside the JSON array.\n- Do not attempt lookups; rely only on patterns in the provided text.\n\nExact output example (must be JSON only):\n\n[\n  { \"symbol\": \"SOLUSDT\", \"pairing\": \"SOL_USDT\" },\n  { \"symbol\": \"BTCUSDT\", \"pairing\": \"BTC_USDT\" }\n]\n"
         }
       },
       "id": "1efa3db1-a8bf-4439-a6ce-9d30e5c508a4",
@@ -384,8 +384,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -1696,
-        632
+        -784,
+        320
       ],
       "id": "36c6a074-13dd-4afd-b429-413f0c05a124",
       "name": "OpenAI",
@@ -394,8 +394,7 @@
           "id": "gZRvcU8iXT74oZnS",
           "name": "OpenAi account"
         }
-      },
-      "disabled": true
+      }
     },
     {
       "parameters": {
@@ -622,8 +621,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -784,
-        320
+        -1696,
+        632
       ],
       "id": "bb9536e6-0eac-4f62-af05-584921280360",
       "name": "Gemini",
@@ -632,7 +631,8 @@
           "id": "cd86rb8vIIPgKJnt",
           "name": "Google Gemini(PaLM) Api account"
         }
-      }
+      },
+      "disabled": true
     }
   ],
   "pinData": {},
@@ -815,7 +815,13 @@
     },
     "OpenAI": {
       "ai_languageModel": [
-        []
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
       ]
     },
     "Mistral": {
@@ -890,13 +896,7 @@
     },
     "Gemini": {
       "ai_languageModel": [
-        [
-          {
-            "node": "Analyst",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Save Trade": {
@@ -909,7 +909,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "df7b7846-2c4c-41de-981a-3b7509583798",
+  "versionId": "8208405b-1dee-4b44-bb51-84fbe88d05ee",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
