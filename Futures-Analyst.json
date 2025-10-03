@@ -12,8 +12,8 @@
       "type": "n8n-nodes-base.dateTimeTool",
       "typeVersion": 2,
       "position": [
-        -528,
-        320
+        -864,
+        416
       ],
       "id": "940e72e2-f5be-446f-81e2-d91045c2e385",
       "name": "Date Time"
@@ -23,8 +23,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolThink",
       "typeVersion": 1,
       "position": [
-        -400,
-        320
+        -736,
+        416
       ],
       "id": "2df968c7-d105-4113-b823-35081599d7a2",
       "name": "Think"
@@ -34,8 +34,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [
-        -272,
-        320
+        -608,
+        416
       ],
       "id": "a9b2252b-311c-403f-aabd-0163becd5fc7",
       "name": "Calculator"
@@ -47,8 +47,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolSearXng",
       "typeVersion": 1,
       "position": [
-        -144,
-        320
+        -480,
+        416
       ],
       "id": "05d6a7b0-b4cc-4def-8fb6-4a584d7359ec",
       "name": "SearXNG",
@@ -73,9 +73,11 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -1352,
-        96
-      ]
+        -1696,
+        192
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -84,8 +86,8 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -1088,
-        320
+        -1424,
+        416
       ],
       "id": "3464639d-f804-4867-91dc-729e4cbf9ab8",
       "name": "Structured Output Parser"
@@ -125,8 +127,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -880,
-        96
+        -1216,
+        192
       ],
       "id": "ff2bc40d-4127-4c95-b6e5-eff0e3504c44",
       "name": "Set Vars"
@@ -141,8 +143,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -1472,
-        320
+        -1808,
+        416
       ],
       "id": "58a5a178-3e91-4ccf-a525-bededf4ae309",
       "name": "Gemini Flash Lite",
@@ -156,17 +158,17 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=# 🔧 Futures Forecast (MEXC)  \n\nSupports both 4h and 24h horizons. Works with `{{ $json.symbol }}`\n\n---\n\n## 🆓 Inputs\n\n- **symbol:** `{{ $json.symbol }}` (example: `SOLUSDT`)  \n- **timeframe:** `\"24h\"`\n- **now:** `{{ $json.now }}` — optional timestamp, otherwise fetch time.  \n- **Primary source:** MEXC (ticker, depth, trades, funding, OI). If down, state fallback exchange and mark outputs low confidence.\n\n---\n\n## 🔎 Required Live Data\n\n1. MEXC: ticker, orderbook depth, trades, 24h stats, funding rate, open interest, liquidations.  \n2. On-chain (if available): active addresses, txs, whale flows.  \n3. Technical indicators: RSI, MACD, EMAs, ATR, VWAP.  \n4. Market microstructure: bid/ask skew, depth imbalance.  \n5. News & social: headlines, Twitter/Reddit sentiment.  \n6. Funding & sentiment: long/short ratio, funding rate trend.  \n\n---\n\n### 🧭 Task — produce a complete forecast\n\nGenerate the following labeled sections with concise outputs. Use icons in headings.\n\n### ⏱️ Snapshot\n\n- Current price (MEXC) + timestamp (Europe/Berlin CET/CEST).  \n- One-line summary (bullish / bearish / neutral).\n\n### 📈 Price Breakpoints\n\n- **Support levels** (nearest → further), with reason + confidence.  \n- **Resistance levels** (nearest → further), with reason + confidence.\n\n### 🧠 Market Sentiment (“Air”)\n\n- Short overview of sentiment based on funding, long/short ratio, social/news, whale flows.  \n- Mention abrupt shifts if detected.\n\n### 📊 Probability-Based Prognosis\n\n- Probabilities (sum ≈ 100%) for **Breakout ↑**, **Breakdown ↓**, **Consolidation**.  \n- Rationale tied to indicators.\n\n### 🧾 Indicator Analysis\n\nCompact list with value + influence:\n\n- RSI, MACD, EMAs (20/50/200), ATR, VWAP.  \n- Orderbook depth/imbalance.  \n- Funding rate & OI.  \n- On-chain (addresses, txs, whales).  \n- News/social sentiment.\n\n### 📉/📈 Trading Recommendation\n\n- **Side:** LONG / SHORT / NEUTRAL.  \n- **Entry zone(s):** price + reason.  \n- **Stop-loss:** price/%.  \n- **Take-profit(s):** 1–3 levels.  \n- Optional: simple position sizing rule.  \nTie each to indicator analysis.\n\n### ⚠️ Risk & Edge Cases\n\n- 2–3 invalidation scenarios + what to monitor.\n\n### 📊 Graphical Representation\n\n- Simple distribution (ASCII/Markdown table) **and** a JSON array `probability_distribution`.  \n- If possible, output price bins → probabilities",
+        "text": "=# 🔧 Futures Forecast (MEXC)  \n\nSupports both 4h horizons. Works with `{{ $json.symbol }}`\nAnalyze the provided MEXC market data and the prior agent's signal logic.\n\n---\n\n## 🆓 Inputs\n\n- **symbol:** `{{ $json.symbol }}` (example: `SOLUSDT`)  \n- **timeframe:** 4 hours\n- **now:** `{{ $json.now }}` — optional timestamp, otherwise fetch time.  \n- **Primary source:** MEXC (ticker, depth, trades, funding, OI). If down, state fallback exchange and mark outputs low confidence.\n\n---\n\n## 🔎 Required Live Data\n\n1. MEXC: ticker, orderbook depth, trades, 24h stats, funding rate, open interest, liquidations.  \n2. On-chain (if available): active addresses, txs, whale flows.  \n3. Technical indicators: RSI, MACD, EMAs, ATR, VWAP.  \n4. Market microstructure: bid/ask skew, depth imbalance.  \n5. News & social: headlines, Twitter/Reddit sentiment.  \n6. Funding & sentiment: long/short ratio, funding rate trend.  \n\n---\n\n### 🧭 Task — produce a complete forecast\n\nGenerate the following labeled sections with concise outputs. Use icons in headings.\n\n### ⏱️ Snapshot\n\n- Current price (MEXC) + timestamp (Europe/Berlin CET/CEST).  \n- One-line summary (bullish / bearish / neutral).\n\n### 📈 Price Breakpoints\n\n- **Support levels** (nearest → further), with reason + confidence.  \n- **Resistance levels** (nearest → further), with reason + confidence.\n\n### 🧠 Market Sentiment (“Air”)\n\n- Short overview of sentiment based on funding, long/short ratio, social/news, whale flows.  \n- Mention abrupt shifts if detected.\n\n### 📊 Probability-Based Prognosis\n\n- Probabilities (sum ≈ 100%) for **Breakout ↑**, **Breakdown ↓**, **Consolidation**.  \n- Rationale tied to indicators.\n\n### 🧾 Indicator Analysis\n\nCompact list with value + influence:\n\n- RSI, MACD, EMAs (20/50/200), ATR, VWAP.  \n- Orderbook depth/imbalance.  \n- Funding rate & OI.  \n- On-chain (addresses, txs, whales).  \n- News/social sentiment.\n\n### 📉/📈 Trading Recommendation\n\n- **Side:** LONG / SHORT / NEUTRAL.  \n- **Entry zone(s):** price + reason.  \n- **Stop-loss:** price/%.  \n- **Take-profit(s):** 1–3 levels.  \n- Optional: simple position sizing rule.  \nTie each to indicator analysis.\n\n### ⚠️ Risk & Edge Cases\n\n- 2–3 invalidation scenarios + what to monitor.\n\n### 📊 Graphical Representation\n\n- Simple distribution (ASCII/Markdown table) **and** a JSON array `probability_distribution`.  \n- If possible, output price bins → probabilities",
         "options": {
-          "systemMessage": "# Cryptocurrency Futures Trading Analyst\n\nYou are a highly specialized AI assistant acting as a **Cryptocurrency Futures Trading Analyst**.  \nYour role is to deliver **short-term (24-hour) forecasts** for cryptocurrency futures markets in a **data-driven, objective, and professional** manner.  \n\nYou have access to the following tools and **must use them all whenever relevant** to gather data and perform analysis:  \n\n- `Get_Trades_List`: Get a list of trades.  \n- `Get_Order_Book_Depth`: Get the order book depth.  \n- `Get_Contract_Details`: Get contract details.  \n- `Get_Current_price`: Get the current price of a contract.  \n- `Get_Historical_Funding_Rate`: Get the historical funding rate.  \n- `Get_Funding_Rate`: Get the current funding rate.  \n- `Get_Candlestick_Data`: Get candlestick data.  \n- `searxng-search`: A meta search engine for answering questions about current events.  \n- `calculator`: A simple calculator for mathematical expressions.  \n- `thinking_tool`: A tool for complex reasoning and caching information.  \n- `Date_Time`: Manipulate date and time values.  \n\nNOTE: if you fail to get data from an API endpoint you retry up till 3 times\n\nYour responses must always be:  \n\n- **Structured** with clearly labeled sections.  \n- **Concise, professional, and actionable**.  \n- Based on the **latest available market data from all tools**.  \n- Include a clear **trading recommendation** (long or short) logically tied to your indicator analysis.  \n\nAlways attempt to **combine insights from all tools** to provide the most accurate and actionable forecast. ",
+          "systemMessage": "# Cryptocurrency Futures Trading Analyst\n\nYou are a highly specialized AI assistant acting as a **Cryptocurrency Futures Trading Analyst**.  \nYour role is to deliver **short-term (24-hour) forecasts** for cryptocurrency futures markets in a **data-driven, objective, and professional** manner.  \n\nYou have access to the following tools and **must use them all whenever relevant** to gather data and perform analysis:  \n\n- `Get_Trades_List`: Get a list of trades.  \n- `Get_Order_Book_Depth`: Get the order book depth.  \n- `Get_Contract_Details`: Get contract details.  \n- `Get_Current_price`: Get the current price of a contract.  \n- `Get_Historical_Funding_Rate`: Get the historical funding rate.  \n- `Get_Funding_Rate`: Get the current funding rate.  \n- `Get_Candlestick_Data`: Get candlestick data.  \n- `searxng-search`: A meta search engine for answering questions about current events.  \n- `calculator`: A simple calculator for mathematical expressions.  \n- `thinking_tool`: A tool for complex reasoning and caching information.  \n- `Date_Time`: Manipulate date and time values.  \n\nNOTE: if you fail to get data from an API endpoint you retry up till 3 times\n\nYour responses must always be:  \n\n- **Structured** with clearly labeled sections.  \n- **Concise, professional, and actionable**.  \n- Based on the **latest available market data from all tools**.  \n- Include a clear **trading recommendation** (long or short) logically tied to your indicator analysis.  \n\nAlways attempt to **combine insights from all tools** to provide the most accurate and actionable forecast. \n\n# DATA CONTEXT:\nThe raw data provided comes directly from the **MEXC Exchange APIs**, specifically the OHLC (Candlestick) endpoint. The fields are mapped to the following database schema for a PostgreSQL table:\n- 'price_time' is the candlestick closing timestamp (TIMESTAMP WITHOUT TIME ZONE).\n- 'open', 'high', 'low', 'close_price' are all **DECIMAL** values.\n- **ENSURE** all price fields in the final JSON are represented as **numbers**, not strings.",
           "returnIntermediateSteps": true
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.9,
       "position": [
-        -24,
-        96
+        -368,
+        192
       ],
       "id": "335285e6-da32-4836-b6da-a6ff84627aa6",
       "name": "Analyst",
@@ -199,8 +201,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        -16,
-        320
+        -352,
+        416
       ],
       "id": "5c7abf31-e09b-4aab-b16e-5db74cd88435",
       "name": "Get Candlestick Data"
@@ -214,8 +216,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        112,
-        320
+        -224,
+        416
       ],
       "id": "ffc47488-7068-476f-a47a-9619dcd302e1",
       "name": "Get Funding Rate"
@@ -246,8 +248,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        240,
-        320
+        -96,
+        416
       ],
       "id": "e28d09e4-4914-4424-9d32-6133bd296a88",
       "name": "Get Historical Funding Rate"
@@ -270,8 +272,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        368,
-        320
+        32,
+        416
       ],
       "id": "25010b7e-80ea-4d9e-af42-b3e1bfe78fdc",
       "name": "Get Current price"
@@ -294,8 +296,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        496,
-        320
+        160,
+        416
       ],
       "id": "08e9eb14-94ab-4d6c-9a6c-261766ab1bf3",
       "name": "Get Contract Details"
@@ -322,8 +324,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        624,
-        320
+        288,
+        416
       ],
       "id": "9549fe77-858c-4000-90d5-8848d3f60f2a",
       "name": "Get Order Book Depth"
@@ -350,8 +352,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        752,
-        320
+        416,
+        416
       ],
       "id": "85e83d53-3d17-4396-b5ee-fc695d02de90",
       "name": "Get Trades List"
@@ -365,8 +367,8 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -1344,
-        320
+        -1680,
+        416
       ]
     },
     {
@@ -384,8 +386,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -1696,
-        632
+        -672,
+        560
       ],
       "id": "36c6a074-13dd-4afd-b429-413f0c05a124",
       "name": "OpenAI",
@@ -407,8 +409,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
       "typeVersion": 1,
       "position": [
-        -656,
-        320
+        -832,
+        576
       ],
       "id": "2e75747e-01d0-45fd-85b0-6d689cf88c3c",
       "name": "Mistral",
@@ -416,29 +418,6 @@
         "mistralCloudApi": {
           "id": "vLfmgTQBWBINDOxf",
           "name": "Mistral Cloud account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "CREATE TABLE IF NOT EXISTS public.trades (\n\tid int GENERATED ALWAYS AS IDENTITY NOT NULL,\n  \tllm varchar NULL,\n    coin varchar NOT NULL,\n\tprice decimal NOT NULL,\n\trecommendation text NOT NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tCONSTRAINT trades_pk PRIMARY KEY (id)\n);",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        1408,
-        192
-      ],
-      "id": "c08cb58d-6b7b-4900-8667-8cc2571cb9bf",
-      "name": "Table Trades Creation",
-      "retryOnFail": true,
-      "waitBetweenTries": 5000,
-      "credentials": {
-        "postgres": {
-          "id": "ofiKMFwnVNzbmUyB",
-          "name": "Postgres account"
         }
       }
     },
@@ -458,10 +437,15 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "price": "={{ $('Get Price And Recommendation').item.json.price }}",
-            "recommendation": "={{ $('Get Price And Recommendation').item.json.recommendation }}",
+            "entry_target_min": "={{ $('Get Vars to save').item.json.entry_target_min }}",
+            "entry_target_max": "={{ $('Get Vars to save').item.json.entry_target_max }}",
+            "llm": "={{ $('Which LLM Question').item.json.chatInput }}",
             "coin": "={{ $('Set Vars').item.json.symbol }}",
-            "llm": "={{ $('Which LLM Question').item.json.chatInput }}"
+            "recommendation_text": "={{ $('Get Vars to save').item.json.recommendation_text }}",
+            "signal_side": "={{ $('Get Vars to save').item.json.signal_side }}",
+            "stop_loss": "={{ $('Get Vars to save').item.json.stop_loss }}",
+            "take_profit_1": "={{ $('Get Vars to save').item.json.take_profit_1 }}",
+            "entry_price": "={{ $('Get Vars to save').item.json.entry_price }}"
           },
           "matchingColumns": [
             "id"
@@ -480,7 +464,7 @@
             {
               "id": "llm",
               "displayName": "llm",
-              "required": false,
+              "required": true,
               "defaultMatch": false,
               "display": true,
               "type": "string",
@@ -498,8 +482,8 @@
               "removed": false
             },
             {
-              "id": "price",
-              "displayName": "price",
+              "id": "entry_price",
+              "displayName": "entry_price",
               "required": true,
               "defaultMatch": false,
               "display": true,
@@ -508,8 +492,58 @@
               "removed": false
             },
             {
-              "id": "recommendation",
-              "displayName": "recommendation",
+              "id": "signal_side",
+              "displayName": "signal_side",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "entry_target_min",
+              "displayName": "entry_target_min",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "entry_target_max",
+              "displayName": "entry_target_max",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "stop_loss",
+              "displayName": "stop_loss",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "take_profit_1",
+              "displayName": "take_profit_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recommendation_text",
+              "displayName": "recommendation_text",
               "required": true,
               "defaultMatch": false,
               "display": true,
@@ -536,7 +570,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1632,
+        1296,
         192
       ],
       "id": "ba62bfa4-fdd3-44af-9001-936ab9b0d818",
@@ -561,25 +595,12 @@
       "type": "@n8n/n8n-nodes-langchain.chat",
       "typeVersion": 1,
       "position": [
-        960,
+        624,
         0
       ],
       "id": "f68ab664-454d-44c3-8bd6-97cb9b99c1ab",
       "name": "Respond to Chat",
       "notesInFlow": false
-    },
-    {
-      "parameters": {
-        "jsCode": "// Input text from previous node\nconst forecastText = $input.first().json.output;\n\n// Extract current price\nconst priceMatch = forecastText.match(/\\*?\\*?Current Price(?: \\(MEXC\\))?:\\*?\\*?\\s*\\$?(\\d+(\\.\\d+)?)/i);\nconst price = priceMatch ? parseFloat(priceMatch[1]) : null;\n\n\n// Extract Trading Recommendation block\nconst tradingRecMatch = forecastText.match(/Trading Recommendation([\\s\\S]*?)⚠️ Risk & Edge Cases/);\nconst recommendation = tradingRecMatch ? tradingRecMatch[1].trim() : null;\n\n// Save extracted data to DB by returning it as separate fields (for a DB node to pick up)\nreturn  [\n  {\n    price,\n    recommendation\n  }\n];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        960,
-        192
-      ],
-      "id": "cf1747ac-8212-44c4-9a17-c891bf00e945",
-      "name": "Get Price And Recommendation"
     },
     {
       "parameters": {
@@ -590,8 +611,8 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.3,
       "position": [
-        -1696,
-        96
+        -2032,
+        192
       ],
       "id": "7065f56b-b9c9-4031-88b0-bc0682c5f015",
       "name": "Chat",
@@ -605,7 +626,7 @@
       "type": "@n8n/n8n-nodes-langchain.chat",
       "typeVersion": 1,
       "position": [
-        1184,
+        848,
         192
       ],
       "id": "9fd2dd17-3b9e-4be8-9721-b817ab80ca47",
@@ -621,8 +642,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -1696,
-        424
+        -992,
+        416
       ],
       "id": "bb9536e6-0eac-4f62-af05-584921280360",
       "name": "Gemini",
@@ -641,8 +662,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolSearXng",
       "typeVersion": 1,
       "position": [
-        -1216,
-        320
+        -1552,
+        416
       ],
       "id": "5ded2357-05c1-4a08-8626-67509d3a6cc9",
       "name": "SearXNG1",
@@ -652,6 +673,228 @@
           "name": "SearXNG account"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Create the trades table\nCREATE TABLE IF NOT EXISTS public.trades (\n    id INT GENERATED ALWAYS AS IDENTITY NOT NULL,\n    \n    llm VARCHAR NOT NULL,\n    coin VARCHAR NOT NULL,\n    entry_price DECIMAL NOT NULL,\n    \n    signal_side VARCHAR NOT NULL, -- LONG, SHORT, or NEUTRAL\n    entry_target_min DECIMAL NULL,\n    entry_target_max DECIMAL NULL,\n    stop_loss DECIMAL NULL,\n    take_profit_1 DECIMAL NULL, -- We only track TP1 for backtesting simplicity\n    \n    recommendation_text TEXT NOT NULL, -- The original text block\n    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,\n    \n    CONSTRAINT trades_pk PRIMARY KEY (id),\n    CONSTRAINT chk_signal_side CHECK (signal_side IN ('LONG', 'SHORT', 'NEUTRAL'))\n);\n\n-- Create index for trades\nCREATE INDEX IF NOT EXISTS idx_trades_coin_time ON public.trades (coin, created_at);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1072,
+        192
+      ],
+      "id": "c08cb58d-6b7b-4900-8667-8cc2571cb9bf",
+      "name": "table trade and market-price creation",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "ofiKMFwnVNzbmUyB",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst analystOutput = items[0].json.output;\n\n// Extract recommendation text\nconst recommendationMatch = analystOutput.match(/(### 📉\\/📈 Trading Recommendation[\\s\\S]*?)(?=### ⚠️|$)/i);\nconst recommendation_text = recommendationMatch ? recommendationMatch[1].trim() : '';\n\n// Fixed entry_price pattern - the issue was the case sensitivity and exact spacing\nconst entryPriceMatch = analystOutput.match(/\\*\\*Current Price \\(MEXC\\):\\*\\*\\s*([\\d\\.]+)/);\nconst entry_price = entryPriceMatch ? parseFloat(entryPriceMatch[1]) : 0;\n\n// Use .exec() for consistent parsing (this works)\nconst sideMatch = /Side:\\*\\*\\s*(LONG|SHORT)/.exec(analystOutput);\nconst entryZoneMatch = /Entry Zone\\(s\\):\\*\\*\\s*([\\d\\.]+)\\s*-\\s*([\\d\\.]+)/.exec(analystOutput);\nconst stopLossMatch = /Stop-loss:\\*\\*\\s*([\\d\\.]+)/.exec(analystOutput);\nconst takeProfitMatch = /TP1:\\s*([\\d\\.]+)/.exec(analystOutput);\n\n// Extract values\nconst signal_side = sideMatch ? sideMatch[1] : 'LONG';\nconst entry_target_min = entryZoneMatch ? parseFloat(entryZoneMatch[1]) : 0;\nconst entry_target_max = entryZoneMatch ? parseFloat(entryZoneMatch[2]) : 0;\nconst stop_loss = stopLossMatch ? parseFloat(stopLossMatch[1]) : 0;\nconst take_profit_1 = takeProfitMatch ? parseFloat(takeProfitMatch[1]) : 0;\n\nreturn [{\n  json: {\n    recommendation_text,\n    entry_price,\n    signal_side,\n    entry_target_min,\n    entry_target_max,\n    stop_loss,\n    take_profit_1\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        192
+      ],
+      "id": "74401b78-c82d-49c6-8c7c-764c0ec968df",
+      "name": "Get Vars to save"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE IF NOT EXISTS public.market_prices (\n    id INT GENERATED ALWAYS AS IDENTITY NOT NULL,\n    coin VARCHAR NOT NULL,\n    open DECIMAL NOT NULL,\n    high DECIMAL NOT NULL, \n    low DECIMAL NOT NULL,  \n    close_price DECIMAL NOT NULL,\n    period VARCHAR NOT NULL,\n    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,\n    \n    CONSTRAINT market_prices_pk PRIMARY KEY (id),\n    CONSTRAINT market_prices_unq UNIQUE (coin, created_at)\n);\n\nCREATE INDEX IF NOT EXISTS idx_prices_coin_time ON public.market_prices (coin, created_at);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        624,
+        384
+      ],
+      "id": "02fad078-8315-4420-907e-39251a6e602a",
+      "name": "table market_prices create",
+      "retryOnFail": true,
+      "alwaysOutputData": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "postgres": {
+          "id": "ofiKMFwnVNzbmUyB",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "market_prices",
+          "mode": "list",
+          "cachedResultName": "market_prices"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "open": "={{ $json[1] }}",
+            "high": "={{ $json[2] }}",
+            "low": "={{ $json[3] }}",
+            "close_price": "={{ $json[4] }}",
+            "coin": "={{ $('Set Vars').item.json.symbol }}",
+            "period": "=15m"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "coin",
+              "displayName": "coin",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "open",
+              "displayName": "open",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "high",
+              "displayName": "high",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "low",
+              "displayName": "low",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "close_price",
+              "displayName": "close_price",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "period",
+              "displayName": "period",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1072,
+        384
+      ],
+      "id": "467e5b53-0627-4ce2-8410-d9a0199c2780",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "ofiKMFwnVNzbmUyB",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.mexc.com/api/v3/klines",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "SOLUSDT"
+            },
+            {
+              "name": "interval",
+              "value": "15m"
+            },
+            {
+              "name": "limit",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        848,
+        384
+      ],
+      "id": "d9b77519-4044-4247-b54f-d6e37fca0a85",
+      "name": "Get Candlestick Data1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     }
   ],
   "pinData": {},
@@ -852,23 +1095,17 @@
       "main": [
         [
           {
-            "node": "Get Price And Recommendation",
+            "node": "Respond to Chat",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Respond to Chat",
+            "node": "Get Vars to save",
             "type": "main",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "Table Trades Creation": {
-      "main": [
-        [
+          },
           {
-            "node": "Save Trade",
+            "node": "table market_prices create",
             "type": "main",
             "index": 0
           }
@@ -878,17 +1115,6 @@
     "Respond to Chat": {
       "main": [
         []
-      ]
-    },
-    "Get Price And Recommendation": {
-      "main": [
-        [
-          {
-            "node": "Which LLM Question",
-            "type": "main",
-            "index": 0
-          }
-        ]
       ]
     },
     "Chat": {
@@ -906,7 +1132,7 @@
       "main": [
         [
           {
-            "node": "Table Trades Creation",
+            "node": "table trade and market-price creation",
             "type": "main",
             "index": 0
           }
@@ -933,13 +1159,57 @@
           }
         ]
       ]
+    },
+    "table trade and market-price creation": {
+      "main": [
+        [
+          {
+            "node": "Save Trade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Vars to save": {
+      "main": [
+        [
+          {
+            "node": "Which LLM Question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "table market_prices create": {
+      "main": [
+        [
+          {
+            "node": "Get Candlestick Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Candlestick Data1": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "bbc55b32-78e7-4e5d-ba8d-8c9eb6839f9d",
+  "versionId": "7c68b85b-e759-476e-8149-addfe947680f",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
