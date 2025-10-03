@@ -419,7 +419,8 @@
           "id": "vLfmgTQBWBINDOxf",
           "name": "Mistral Cloud account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -652,8 +653,7 @@
           "id": "cd86rb8vIIPgKJnt",
           "name": "Google Gemini(PaLM) Api account"
         }
-      },
-      "disabled": true
+      }
     },
     {
       "parameters": {
@@ -700,7 +700,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst analystOutput = items[0].json.output;\n\n// Extract recommendation text\nconst recommendationMatch = analystOutput.match(/(### 📉\\/📈 Trading Recommendation[\\s\\S]*?)(?=### ⚠️|$)/i);\nconst recommendation_text = recommendationMatch ? recommendationMatch[1].trim() : '';\n\n// Fixed entry_price pattern - the issue was the case sensitivity and exact spacing\nconst entryPriceMatch = analystOutput.match(/\\*\\*Current Price \\(MEXC\\):\\*\\*\\s*([\\d\\.]+)/);\nconst entry_price = entryPriceMatch ? parseFloat(entryPriceMatch[1]) : 0;\n\n// Use .exec() for consistent parsing (this works)\nconst sideMatch = /Side:\\*\\*\\s*(LONG|SHORT)/.exec(analystOutput);\nconst entryZoneMatch = /Entry Zone\\(s\\):\\*\\*\\s*([\\d\\.]+)\\s*-\\s*([\\d\\.]+)/.exec(analystOutput);\nconst stopLossMatch = /Stop-loss:\\*\\*\\s*([\\d\\.]+)/.exec(analystOutput);\nconst takeProfitMatch = /TP1:\\s*([\\d\\.]+)/.exec(analystOutput);\n\n// Extract values\nconst signal_side = sideMatch ? sideMatch[1] : 'LONG';\nconst entry_target_min = entryZoneMatch ? parseFloat(entryZoneMatch[1]) : 0;\nconst entry_target_max = entryZoneMatch ? parseFloat(entryZoneMatch[2]) : 0;\nconst stop_loss = stopLossMatch ? parseFloat(stopLossMatch[1]) : 0;\nconst take_profit_1 = takeProfitMatch ? parseFloat(takeProfitMatch[1]) : 0;\n\nreturn [{\n  json: {\n    recommendation_text,\n    entry_price,\n    signal_side,\n    entry_target_min,\n    entry_target_max,\n    stop_loss,\n    take_profit_1\n  }\n}];\n"
+        "jsCode": "const items = $input.all();\nconst inputJson = items[0].json;\n\n// 1. ROBUST INPUT RETRIEVAL AND CORRECTED recommendation_text EXTRACTION\n// Use the original text for parsing all values\nconst analystOutputFullText = inputJson.recommendation_text || inputJson.output || ''; \n\n// Corrected regex to find text between the specified headers\n// It looks for \"### 📉/📈 Trading Recommendation\" and captures everything non-greedily ([\\s\\S]*?) \n// until it hits \"### ⚠️ Risk & Edge Cases\" or the end of the string ($).\nconst recommendationMatch = analystOutputFullText.match(/### 📉\\/📈 Trading Recommendation([\\s\\S]*?)(?=### ⚠️ Risk & Edge Cases|$)/i);\nconst recommendation_text = recommendationMatch ? recommendationMatch[1].trim() : analystOutputFullText;\n\n\n// *** NOTE: The input text does NOT contain a 'Current Price', so entry_price will remain 0. ***\n// We still use the FULL text for all parsing.\nconst entryPriceMatch = analystOutputFullText.match(/\\*\\*Current Price \\(MEXC\\):\\*\\*\\s*([\\d\\.]+)/);\nconst entry_price = entryPriceMatch ? parseFloat(entryPriceMatch[1]) : 0;\n\n// 2. CORRECTED REGEX PATTERNS FOR PRICE EXTRACTION\n\n// Signal Side: Matches \"Side:** NEUTRAL to SHORT bias\" or \"Side:** LONG bias\"\nconst sideMatch = /Side:\\*\\*\\s*(.+?)\\s*bias/.exec(analystOutputFullText) || /Side:\\*\\*\\s*(LONG|SHORT|NEUTRAL)/.exec(analystOutputFullText);\n\nlet signal_side = 'NEUTRAL';\nif (sideMatch) {\n    const sideText = sideMatch[1].toUpperCase();\n    if (sideText.includes('SHORT')) {\n        signal_side = 'SHORT';\n    } else if (sideText.includes('LONG')) {\n        signal_side = 'LONG';\n    } else if (sideText.includes('NEUTRAL')) {\n        signal_side = 'NEUTRAL';\n    }\n} else {\n    signal_side = 'UNKNOWN';\n}\n\n// Entry Zone: Matches \"Entry zone:** Short near 233-235 USDT\"\nconst entryZoneMatch = /Entry zone:\\*\\*\\s*(?:Short|Long)\\s*near\\s*([\\d\\.]+)-([\\d\\.]+)\\s*USDT/.exec(analystOutputFullText);\nconst entry_target_min = entryZoneMatch ? parseFloat(entryZoneMatch[1]) : 0;\nconst entry_target_max = entryZoneMatch ? parseFloat(entryZoneMatch[2]) : 0;\n\n// Stop-Loss: Matches \"Stop-loss:** Above 238 USDT\"\nconst stopLossMatch = /Stop-loss:\\*\\*\\s*(?:Above|Below)\\s*([\\d\\.]+)\\s*USDT/.exec(analystOutputFullText);\nconst stop_loss = stopLossMatch ? parseFloat(stopLossMatch[1]) : 0;\n\n// Take-Profit 1: Matches \"1. 228.5 USDT\"\nconst takeProfitMatch = /1\\.\\s*([\\d\\.]+)\\s*USDT/.exec(analystOutputFullText);\nconst take_profit_1 = takeProfitMatch ? parseFloat(takeProfitMatch[1]) : 0;\n\n\n// 3. RETURN THE RESULT\nreturn [{\n  json: {\n    recommendation_text,\n    entry_price, \n    signal_side, \n    entry_target_min, \n    entry_target_max, \n    stop_loss, \n    take_profit_1\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -823,6 +823,16 @@
               "removed": false
             },
             {
+              "id": "period",
+              "displayName": "period",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
               "id": "created_at",
               "displayName": "created_at",
               "required": false,
@@ -831,16 +841,6 @@
               "type": "dateTime",
               "canBeUsedToMatch": true,
               "removed": true
-            },
-            {
-              "id": "period",
-              "displayName": "period",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -1082,13 +1082,7 @@
     },
     "Mistral": {
       "ai_languageModel": [
-        [
-          {
-            "node": "Analyst",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Analyst": {
@@ -1141,7 +1135,13 @@
     },
     "Gemini": {
       "ai_languageModel": [
-        []
+        [
+          {
+            "node": "Analyst",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
       ]
     },
     "Save Trade": {
@@ -1209,7 +1209,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "7c68b85b-e759-476e-8149-addfe947680f",
+  "versionId": "dca61315-d719-4db3-881c-30b63a848118",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
