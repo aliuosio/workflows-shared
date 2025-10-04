@@ -895,7 +895,7 @@
         416
       ],
       "id": "66070acc-a5c0-4112-9bf4-b0d447ecdf51",
-      "name": "Postgres Chat Memory",
+      "name": "Memory",
       "credentials": {
         "postgres": {
           "id": "Nhj8RmVOEtNfJ6qK",
@@ -915,7 +915,7 @@
         416
       ],
       "id": "3829667f-526a-4b80-b3e2-fd53715f48f8",
-      "name": "Postgres Chat Memory1",
+      "name": "Memory1",
       "credentials": {
         "postgres": {
           "id": "Nhj8RmVOEtNfJ6qK",
@@ -1200,7 +1200,12 @@
         ]
       ]
     },
-    "Postgres Chat Memory": {
+    "OpenAI": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Memory": {
       "ai_memory": [
         [
           {
@@ -1211,7 +1216,7 @@
         ]
       ]
     },
-    "Postgres Chat Memory1": {
+    "Memory1": {
       "ai_memory": [
         [
           {
@@ -1227,7 +1232,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a0249d77-f3bb-487e-8685-6732ac67ce53",
+  "versionId": "4aafc773-95fe-419c-83c9-eaba40796ccc",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
