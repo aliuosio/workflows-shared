@@ -12,10 +12,10 @@
       "type": "n8n-nodes-base.dateTimeTool",
       "typeVersion": 2,
       "position": [
-        -1488,
-        416
+        -1152,
+        -32
       ],
-      "id": "b80df08f-d46c-4a12-83c4-89457af8d5c9",
+      "id": "71aa6be5-0d54-45bf-9cac-a5a087820392",
       "name": "Date Time"
     },
     {
@@ -23,10 +23,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolThink",
       "typeVersion": 1,
       "position": [
-        -1360,
-        416
+        -1024,
+        -32
       ],
-      "id": "deb31794-34f8-428d-a6ad-268c18d31d4c",
+      "id": "beefac99-3436-4423-88e6-be96925e6013",
       "name": "Think"
     },
     {
@@ -34,10 +34,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [
-        -1232,
-        416
+        -896,
+        -32
       ],
-      "id": "afd89ee4-abee-4257-bdbf-720ec4cdb5e3",
+      "id": "1179bd66-1481-4006-ad38-0e47534de263",
       "name": "Calculator"
     },
     {
@@ -47,10 +47,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolSearXng",
       "typeVersion": 1,
       "position": [
-        -1104,
-        416
+        -768,
+        -32
       ],
-      "id": "23966882-e7fa-4ee2-94c3-e72cba307622",
+      "id": "cf579cbe-008a-436a-9f1f-e716a09e228e",
       "name": "SearXNG",
       "credentials": {
         "searXngApi": {
@@ -68,13 +68,13 @@
           "systemMessage": "You are an information extraction assistant with access to a **SearxXNG tool node** in n8n. Your task is to identify cryptocurrency symbols and trading pair symbols in the provided text, or just the coin name.\nUse searcth toool to get valid oparings\n\n**Rules:**  \n- Return **ONLY** valid cryptocurrency trading pairs and coin names found in the input.  \n- Normalize all outputs to **UPPERCASE**.  \n- Accept common separators between base and quote: `/`, `-`, `_`, whitespace, or none. Examples: `BTCUSDT`, `BTC/USDT`, `btc usdt`, `btc-usdt`.  \n\nOutput fields:  \n- `\"symbol\"`: concatenation of BASE and QUOTE with **no separator** (e.g., `\"SOLUSDT\"`).  \n- `\"pairing\"`: BASE and QUOTE separated by an **underscore** (e.g., `\"SOL_USDT\"`).  \n- Ensure **USDT is always the quote** at the end of the symbol.  \n- If multiple pairs are found, return an **ARRAY of objects** in the order they appear in the text.  \n- If no valid trading pair is found, return a **single-item array with nulls**:  \n   \n Do NOT include any extra text, explanation, or metadata outside the JSON array."
         }
       },
-      "id": "c4647ddc-a4f3-4e88-8458-a0c85a454dd9",
+      "id": "d8196efb-1c67-47ac-9c7f-9ab0c73ece36",
       "name": "Get Symbol",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -2448,
-        192
+        -2112,
+        -256
       ],
       "retryOnFail": true,
       "waitBetweenTries": 5000
@@ -86,10 +86,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -2176,
-        416
+        -1840,
+        -32
       ],
-      "id": "ea5155f4-3058-4b68-9279-bcc747cbf1db",
+      "id": "c0708b98-8f78-467e-a12c-363988c48ff7",
       "name": "Structured Output Parser"
     },
     {
@@ -127,10 +127,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1968,
-        192
+        -1632,
+        -256
       ],
-      "id": "30cf4263-2791-4369-b1aa-8a07edba1f74",
+      "id": "3c876532-13a6-4372-b68b-c02ae660bf71",
       "name": "Set Vars"
     },
     {
@@ -143,10 +143,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -2560,
-        416
+        -2224,
+        -32
       ],
-      "id": "e256a1e8-c339-4813-b3a9-986dcb66bbb2",
+      "id": "b38a7e86-2aba-4ff6-b441-f9c1fd955586",
       "name": "Gemini Flash Lite",
       "credentials": {
         "googlePalmApi": {
@@ -158,7 +158,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=# 🔧 Futures Forecast (MEXC)  \n\nSupports both 4h horizons. Works with `{{ $json.symbol }}`\nAnalyze the provided MEXC market data and the prior agent's signal logic.\n\n---\n\n## 🆓 Inputs\n\n- **symbol:** `{{ $json.symbol }}` (example: `SOLUSDT`)  \n- **timeframe:** 4 hours\n- **now:** `{{ $json.now }}` — optional timestamp, otherwise fetch time.  \n- **Primary source:** MEXC (ticker, depth, trades, funding, OI). If down, state fallback exchange and mark outputs low confidence.\n\n---\n\n## 🔎 Required Live Data\n\n1. MEXC: ticker, orderbook depth, trades, 24h stats, funding rate, open interest, liquidations.  \n2. On-chain (if available): active addresses, txs, whale flows.  \n3. Technical indicators: RSI, MACD, EMAs, ATR, VWAP.  \n4. Market microstructure: bid/ask skew, depth imbalance.  \n5. News & social: headlines, Twitter/Reddit sentiment.  \n6. Funding & sentiment: long/short ratio, funding rate trend.  \n\n---\n\n### 🧭 Task — produce a complete forecast\n\nGenerate the following labeled sections with concise outputs. Use icons in headings.\n\n### ⏱️ Snapshot\n\n- Current price (MEXC) + timestamp (Europe/Berlin CET/CEST).  \n- One-line summary (bullish / bearish / neutral).\n\n### 📈 Price Breakpoints\n\n- **Support levels** (nearest → further), with reason + confidence.  \n- **Resistance levels** (nearest → further), with reason + confidence.\n\n### 🧠 Market Sentiment (“Air”)\n\n- Short overview of sentiment based on funding, long/short ratio, social/news, whale flows.  \n- Mention abrupt shifts if detected.\n\n### 📊 Probability-Based Prognosis\n\n- Probabilities (sum ≈ 100%) for **Breakout ↑**, **Breakdown ↓**, **Consolidation**.  \n- Rationale tied to indicators.\n\n### 🧾 Indicator Analysis\n\nCompact list with value + influence:\n\n- RSI, MACD, EMAs (20/50/200), ATR, VWAP.  \n- Orderbook depth/imbalance.  \n- Funding rate & OI.  \n- On-chain (addresses, txs, whales).  \n- News/social sentiment.\n\n### 📉/📈 Trading Recommendation\n\n- **Side:** LONG / SHORT / NEUTRAL.  \n- **Entry zone(s):** price + reason.  \n- **Stop-loss:** price/%.  \n- **Take-profit(s):** 1–3 levels.  \n- Optional: simple position sizing rule.  \nTie each to indicator analysis.\n\n### ⚠️ Risk & Edge Cases\n\n- 2–3 invalidation scenarios + what to monitor.\n\n### 📊 Graphical Representation\n\n- Simple distribution (ASCII/Markdown table) **and** a JSON array `probability_distribution`.  \n- If possible, output price bins → probabilities",
+        "text": "=# 🔧 Futures Forecast (MEXC)  \n\nSupports both 4h horizons. Works with `{{ $json.symbol }}`\nAnalyze the provided MEXC market data and the prior agent's signal logic.\n\n---\n\n## 🆓 Inputs\n\n- **symbol:** `{{ $json.symbol }}` (example: `SOLUSDT`)  \n- **timeframe:** 4 hours\n- **now:** `{{ $json.now }}` — optional timestamp, otherwise fetch time.  \n- **Primary source:** MEXC (ticker, depth, trades, funding, OI). If down, state fallback exchange and mark outputs low confidence.\n\n---\n\n## 🔎 Required Live Data\n\n1. MEXC: ticker, orderbook depth, trades, 24h stats, funding rate, open interest, liquidations.  \n2. On-chain (if available): active addresses, txs, whale flows.  \n3. Technical indicators: RSI, MACD, EMAs, ATR, VWAP.  \n4. Market microstructure: bid/ask skew, depth imbalance.  \n5. News & social: headlines, Twitter/Reddit sentiment.  \n6. Funding & sentiment: long/short ratio, funding rate trend.  \n\n---\n\n### 🧭 Task — produce a complete forecast\n\nGenerate the following labeled sections with concise outputs. Use icons in headings.\n\n### ⏱️ Snapshot\n\n- Current price (MEXC) + timestamp (Europe/Berlin CET/CEST).  \n- One-line summary (bullish / bearish / neutral).\n\n### 📈 Price Breakpoints\n\n- **Support levels** (nearest → further), with reason + confidence.  \n- **Resistance levels** (nearest → further), with reason + confidence.\n\n### 🧠 Market Sentiment (“Air”)\n\n- Short overview of sentiment based on funding, long/short ratio, social/news, whale flows.  \n- Mention abrupt shifts if detected.\n\n### 📊 Probability-Based Prognosis\n\n- Probabilities (sum ≈ 100%) for **Breakout ↑**, **Breakdown ↓**, **Consolidation**.  \n- Rationale tied to indicators.\n\n### 🧾 Indicator Analysis\n\nCompact list with value + influence:\n\n- RSI, MACD, EMAs (20/50/200), ATR, VWAP.  \n- Bollinger Bands / Keltner Channels  (identify squeeze conditions and volatility compression)\n- Support & Resistance zones and Volume Profile levels (POC/HVN/LVN)\n- Orderbook depth/imbalance.  \n- Funding rate & OI.  \n- On-chain (addresses, txs, whales).  \n- News/social sentiment.\n\n### 📉/📈 Trading Recommendation\n\n- **Side:** LONG / SHORT / NEUTRAL.  \n- **Entry zone(s):** price + reason.  \n- **Stop-loss:** price/%.  \n- **Take-profit(s):** 1–3 levels.  \n- Optional: simple position sizing rule.  \nTie each to indicator analysis.\n\n### ⚠️ Risk & Edge Cases\n\n- 2–3 invalidation scenarios + what to monitor.\n\n### 📊 Graphical Representation\n\n- Simple distribution (ASCII/Markdown table) **and** a JSON array `probability_distribution`.  \n- If possible, output price bins → probabilities",
         "options": {
           "systemMessage": "# Cryptocurrency Futures Trading Analyst\n\nYou are a highly specialized AI assistant acting as a **Cryptocurrency Futures Trading Analyst**.  \nYour role is to deliver **short-term (24-hour) forecasts** for cryptocurrency futures markets in a **data-driven, objective, and professional** manner.  \n\nYou have access to the following tools and **must use them all whenever relevant** to gather data and perform analysis:  \n\n- `Get_Trades_List`: Get a list of trades.  \n- `Get_Order_Book_Depth`: Get the order book depth.  \n- `Get_Contract_Details`: Get contract details.  \n- `Get_Current_price`: Get the current price of a contract.  \n- `Get_Historical_Funding_Rate`: Get the historical funding rate.  \n- `Get_Funding_Rate`: Get the current funding rate.  \n- `Get_Candlestick_Data`: Get candlestick data.  \n- `searxng-search`: A meta search engine for answering questions about current events.  \n- `calculator`: A simple calculator for mathematical expressions.  \n- `thinking_tool`: A tool for complex reasoning and caching information.  \n- `Date_Time`: Manipulate date and time values.  \n\nNOTE: if you fail to get data from an API endpoint you retry up till 3 times\n\nonly intervals allowed on Get_Candlestick_Data tool node: 1m, 5m, 15m, 30m, 60m, 4h, 1d, 1W, 1M\n\nYour responses must always be:  \n- **Structured** with clearly labeled sections.  \n- **Concise, professional, and actionable**.  \n- Based on the **latest available market data from all tools**.  \n- Include a clear **trading recommendation** (long or short) logically tied to your indicator analysis.  \n\nAlways attempt to **combine insights from all tools** to provide the most accurate and actionable forecast.\n\nuse date & time tool connected to get date and time bfore doing API calss\n\n# DATA CONTEXT:\nThe raw data provided comes directly from the **MEXC Exchange APIs**, specifically the OHLC (Candlestick) endpoint. The fields are mapped to the following database schema for a PostgreSQL table:\n- 'price_time' is the candlestick closing timestamp (TIMESTAMP WITHOUT TIME ZONE).\n- 'open', 'high', 'low', 'close_price' are all **DECIMAL** values.\n- **ENSURE** all price fields in the final JSON are represented as **numbers**, not strings.",
           "returnIntermediateSteps": true
@@ -167,10 +167,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.9,
       "position": [
-        -1056,
-        192
+        -720,
+        -256
       ],
-      "id": "4b8ac0ea-959d-4bc4-8557-d040811f7234",
+      "id": "2abb96c0-9f9a-4bd2-b95c-c9915c890aa4",
       "name": "Analyst",
       "retryOnFail": true,
       "waitBetweenTries": 5000
@@ -201,10 +201,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        -976,
-        416
+        -640,
+        -32
       ],
-      "id": "4be85d64-1f8b-4e31-a45f-31e46c18ac7b",
+      "id": "afe98145-162c-4353-86a4-41f5a532f111",
       "name": "Get Candlestick Data"
     },
     {
@@ -216,10 +216,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        -848,
-        416
+        -512,
+        -32
       ],
-      "id": "a6a8c64b-4c96-4ee8-81d3-cb528bdfc999",
+      "id": "7641bcb0-b0ae-4a41-943f-a375adcc7b29",
       "name": "Get Funding Rate"
     },
     {
@@ -248,10 +248,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        -720,
-        416
+        -384,
+        -32
       ],
-      "id": "f056db40-3e4d-4949-8c1f-6fa22edee3c9",
+      "id": "18bd7096-96b1-4abe-88de-7338ce53371d",
       "name": "Get Historical Funding Rate"
     },
     {
@@ -272,10 +272,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        -592,
-        416
+        -256,
+        -32
       ],
-      "id": "cab1627c-2a94-4b48-aabe-bf5d3980f71a",
+      "id": "f3d5cd48-d5ef-44b7-89be-1354966bce46",
       "name": "Get Current price"
     },
     {
@@ -296,10 +296,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        -464,
-        416
+        -128,
+        -32
       ],
-      "id": "2da439e8-e388-4397-9c94-ef7e82ffd93e",
+      "id": "59f0f90d-f5a5-4e22-84c6-06db4f6d8eaa",
       "name": "Get Contract Details"
     },
     {
@@ -324,10 +324,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        -336,
-        416
+        0,
+        -32
       ],
-      "id": "f2c9fe1d-b9ab-418e-bb6c-f32c4259cd51",
+      "id": "02f7f014-defc-44b8-9dae-c4b99b9dff89",
       "name": "Get Order Book Depth"
     },
     {
@@ -352,10 +352,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        -208,
-        416
+        128,
+        -32
       ],
-      "id": "b53b5b78-99f6-42d5-88b4-04e9379ba2ff",
+      "id": "dd4052b2-3b5e-4b75-8c64-b902e01bd386",
       "name": "Get Trades List"
     },
     {
@@ -373,10 +373,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -1488,
-        592
+        -1152,
+        160
       ],
-      "id": "7cfb09ae-a2db-4dfe-ad16-201aa1f70b46",
+      "id": "b4290aad-02b6-46d0-b0f1-f120bd6d9e18",
       "name": "OpenAI",
       "credentials": {
         "openAiApi": {
@@ -396,10 +396,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
       "typeVersion": 1,
       "position": [
-        -1744,
-        416
+        -1408,
+        -32
       ],
-      "id": "aaf1bd82-604d-4bfd-b3b4-7cc6eda1db68",
+      "id": "14ff23c0-d7aa-45d7-9d3c-90be7c331025",
       "name": "Mistral",
       "credentials": {
         "mistralCloudApi": {
@@ -557,10 +557,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        672,
-        192
+        1008,
+        -256
       ],
-      "id": "7ed6b02d-64af-42fb-bcf0-b37dcea692db",
+      "id": "ca047812-d3a0-4714-ac95-10224c26e4ed",
       "name": "Save Trade",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
@@ -582,10 +582,10 @@
       "type": "@n8n/n8n-nodes-langchain.chat",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        336,
+        -448
       ],
-      "id": "3e61a612-51ed-4b54-a751-135ab43f74d5",
+      "id": "66dd8e40-61ea-4a35-8537-2b02d9dea284",
       "name": "Respond to Chat",
       "notesInFlow": false
     },
@@ -598,10 +598,10 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.3,
       "position": [
-        -2784,
-        192
+        -2448,
+        -256
       ],
-      "id": "d121cc03-7963-4507-b4d7-0f45f2a4b483",
+      "id": "6b93ad87-894c-4604-9c88-d6bf9f6f9f7e",
       "name": "Chat",
       "webhookId": "81de5df4-57cb-4b2c-bdbc-5855db4fafec"
     },
@@ -613,10 +613,10 @@
       "type": "@n8n/n8n-nodes-langchain.chat",
       "typeVersion": 1,
       "position": [
-        224,
-        192
+        560,
+        -256
       ],
-      "id": "14ae9c25-321a-405d-84bf-6e0fb87b0a90",
+      "id": "699b7c25-8656-46be-b3b7-7eea9ba16231",
       "name": "Which LLM Question"
     },
     {
@@ -629,10 +629,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -1296,
-        576
+        -960,
+        144
       ],
-      "id": "b03cf536-648d-43be-8fd0-3e9115e1050d",
+      "id": "ea06a39b-864f-466c-985c-9c4a28399b98",
       "name": "Gemini",
       "credentials": {
         "googlePalmApi": {
@@ -649,10 +649,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolSearXng",
       "typeVersion": 1,
       "position": [
-        -2304,
-        416
+        -1968,
+        -32
       ],
-      "id": "50e29209-79cc-4b3b-af5c-7f564844f467",
+      "id": "8e2d8e90-00ce-4a58-a9f1-e93efcc13da9",
       "name": "SearXNG1",
       "credentials": {
         "searXngApi": {
@@ -670,10 +670,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        448,
-        192
+        784,
+        -256
       ],
-      "id": "367d6012-a6c1-46e0-b85f-7158def4c448",
+      "id": "c0b319ed-bf06-4626-b7d5-7c8775faac5a",
       "name": "table trade and market-price creation",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
@@ -692,10 +692,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
-        192
+        336,
+        -256
       ],
-      "id": "669fbd2d-8b12-45bc-895a-8121f813222d",
+      "id": "26d5b368-53fe-4132-b094-3babfcc2b768",
       "name": "Get Vars to save"
     },
     {
@@ -707,10 +707,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        0,
-        384
+        336,
+        -64
       ],
-      "id": "9545320a-6abf-440f-9d72-6b4ab9a9d703",
+      "id": "86b0f854-5489-4469-bc40-a90d6dbbe7dd",
       "name": "table market_prices create",
       "retryOnFail": true,
       "alwaysOutputData": true,
@@ -838,10 +838,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        448,
-        384
+        784,
+        -64
       ],
-      "id": "5466f371-748b-44b4-8168-b0edf96eaec4",
+      "id": "1150d86e-369d-4e03-9a1c-4f8c72c06d0d",
       "name": "Insert rows in a table",
       "credentials": {
         "postgres": {
@@ -875,10 +875,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        224,
-        384
+        560,
+        -64
       ],
-      "id": "08d771f2-2c3c-496a-b532-1e5ef71e8ac8",
+      "id": "8c8d9bfa-a912-4219-ac5b-8f5f3699f558",
       "name": "Get Candlestick Data1",
       "retryOnFail": true,
       "waitBetweenTries": 5000
@@ -891,10 +891,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        -2432,
-        416
+        -2096,
+        -32
       ],
-      "id": "66070acc-a5c0-4112-9bf4-b0d447ecdf51",
+      "id": "edf47cfa-f5e8-4c67-b30b-041b1b9f5fce",
       "name": "Memory",
       "credentials": {
         "postgres": {
@@ -911,10 +911,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        -1616,
-        416
+        -1280,
+        -32
       ],
-      "id": "3829667f-526a-4b80-b3e2-fd53715f48f8",
+      "id": "ab43920e-c7a6-457a-b3b2-be320d498291",
       "name": "Memory1",
       "credentials": {
         "postgres": {
@@ -1200,11 +1200,6 @@
         ]
       ]
     },
-    "OpenAI": {
-      "ai_languageModel": [
-        []
-      ]
-    },
     "Memory": {
       "ai_memory": [
         [
@@ -1232,7 +1227,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "4aafc773-95fe-419c-83c9-eaba40796ccc",
+  "versionId": "b390a6f8-eaba-4e8f-8a6a-9df7c132b4cf",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
