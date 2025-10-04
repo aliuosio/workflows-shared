@@ -12,10 +12,10 @@
       "type": "n8n-nodes-base.dateTimeTool",
       "typeVersion": 2,
       "position": [
-        -736,
+        -1488,
         416
       ],
-      "id": "940e72e2-f5be-446f-81e2-d91045c2e385",
+      "id": "b80df08f-d46c-4a12-83c4-89457af8d5c9",
       "name": "Date Time"
     },
     {
@@ -23,10 +23,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolThink",
       "typeVersion": 1,
       "position": [
-        -608,
+        -1360,
         416
       ],
-      "id": "2df968c7-d105-4113-b823-35081599d7a2",
+      "id": "deb31794-34f8-428d-a6ad-268c18d31d4c",
       "name": "Think"
     },
     {
@@ -34,10 +34,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [
-        -480,
+        -1232,
         416
       ],
-      "id": "a9b2252b-311c-403f-aabd-0163becd5fc7",
+      "id": "afd89ee4-abee-4257-bdbf-720ec4cdb5e3",
       "name": "Calculator"
     },
     {
@@ -47,14 +47,14 @@
       "type": "@n8n/n8n-nodes-langchain.toolSearXng",
       "typeVersion": 1,
       "position": [
-        -352,
+        -1104,
         416
       ],
-      "id": "05d6a7b0-b4cc-4def-8fb6-4a584d7359ec",
+      "id": "23966882-e7fa-4ee2-94c3-e72cba307622",
       "name": "SearXNG",
       "credentials": {
         "searXngApi": {
-          "id": "GdxVcHHsVzCfazYA",
+          "id": "jYfy1ZXECzTic5K8",
           "name": "SearXNG account"
         }
       }
@@ -68,12 +68,12 @@
           "systemMessage": "You are an information extraction assistant with access to a **SearxXNG tool node** in n8n. Your task is to identify cryptocurrency symbols and trading pair symbols in the provided text, or just the coin name.\nUse searcth toool to get valid oparings\n\n**Rules:**  \n- Return **ONLY** valid cryptocurrency trading pairs and coin names found in the input.  \n- Normalize all outputs to **UPPERCASE**.  \n- Accept common separators between base and quote: `/`, `-`, `_`, whitespace, or none. Examples: `BTCUSDT`, `BTC/USDT`, `btc usdt`, `btc-usdt`.  \n\nOutput fields:  \n- `\"symbol\"`: concatenation of BASE and QUOTE with **no separator** (e.g., `\"SOLUSDT\"`).  \n- `\"pairing\"`: BASE and QUOTE separated by an **underscore** (e.g., `\"SOL_USDT\"`).  \n- Ensure **USDT is always the quote** at the end of the symbol.  \n- If multiple pairs are found, return an **ARRAY of objects** in the order they appear in the text.  \n- If no valid trading pair is found, return a **single-item array with nulls**:  \n   \n Do NOT include any extra text, explanation, or metadata outside the JSON array."
         }
       },
-      "id": "1efa3db1-a8bf-4439-a6ce-9d30e5c508a4",
+      "id": "c4647ddc-a4f3-4e88-8458-a0c85a454dd9",
       "name": "Get Symbol",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -1696,
+        -2448,
         192
       ],
       "retryOnFail": true,
@@ -86,10 +86,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -1424,
+        -2176,
         416
       ],
-      "id": "3464639d-f804-4867-91dc-729e4cbf9ab8",
+      "id": "ea5155f4-3058-4b68-9279-bcc747cbf1db",
       "name": "Structured Output Parser"
     },
     {
@@ -127,10 +127,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1216,
+        -1968,
         192
       ],
-      "id": "ff2bc40d-4127-4c95-b6e5-eff0e3504c44",
+      "id": "30cf4263-2791-4369-b1aa-8a07edba1f74",
       "name": "Set Vars"
     },
     {
@@ -143,14 +143,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -1808,
+        -2560,
         416
       ],
-      "id": "58a5a178-3e91-4ccf-a525-bededf4ae309",
+      "id": "e256a1e8-c339-4813-b3a9-986dcb66bbb2",
       "name": "Gemini Flash Lite",
       "credentials": {
         "googlePalmApi": {
-          "id": "cd86rb8vIIPgKJnt",
+          "id": "lXNthlK3K8nZ7nmD",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -167,10 +167,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.9,
       "position": [
-        -304,
+        -1056,
         192
       ],
-      "id": "335285e6-da32-4836-b6da-a6ff84627aa6",
+      "id": "4b8ac0ea-959d-4bc4-8557-d040811f7234",
       "name": "Analyst",
       "retryOnFail": true,
       "waitBetweenTries": 5000
@@ -201,10 +201,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        -224,
+        -976,
         416
       ],
-      "id": "5c7abf31-e09b-4aab-b16e-5db74cd88435",
+      "id": "4be85d64-1f8b-4e31-a45f-31e46c18ac7b",
       "name": "Get Candlestick Data"
     },
     {
@@ -216,10 +216,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        -96,
+        -848,
         416
       ],
-      "id": "ffc47488-7068-476f-a47a-9619dcd302e1",
+      "id": "a6a8c64b-4c96-4ee8-81d3-cb528bdfc999",
       "name": "Get Funding Rate"
     },
     {
@@ -248,10 +248,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        32,
+        -720,
         416
       ],
-      "id": "e28d09e4-4914-4424-9d32-6133bd296a88",
+      "id": "f056db40-3e4d-4949-8c1f-6fa22edee3c9",
       "name": "Get Historical Funding Rate"
     },
     {
@@ -272,10 +272,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        160,
+        -592,
         416
       ],
-      "id": "25010b7e-80ea-4d9e-af42-b3e1bfe78fdc",
+      "id": "cab1627c-2a94-4b48-aabe-bf5d3980f71a",
       "name": "Get Current price"
     },
     {
@@ -296,10 +296,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        288,
+        -464,
         416
       ],
-      "id": "08e9eb14-94ab-4d6c-9a6c-261766ab1bf3",
+      "id": "2da439e8-e388-4397-9c94-ef7e82ffd93e",
       "name": "Get Contract Details"
     },
     {
@@ -324,10 +324,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        416,
+        -336,
         416
       ],
-      "id": "9549fe77-858c-4000-90d5-8848d3f60f2a",
+      "id": "f2c9fe1d-b9ab-418e-bb6c-f32c4259cd51",
       "name": "Get Order Book Depth"
     },
     {
@@ -352,10 +352,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        544,
+        -208,
         416
       ],
-      "id": "85e83d53-3d17-4396-b5ee-fc695d02de90",
+      "id": "b53b5b78-99f6-42d5-88b4-04e9379ba2ff",
       "name": "Get Trades List"
     },
     {
@@ -373,14 +373,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -736,
+        -1488,
         592
       ],
-      "id": "36c6a074-13dd-4afd-b429-413f0c05a124",
+      "id": "7cfb09ae-a2db-4dfe-ad16-201aa1f70b46",
       "name": "OpenAI",
       "credentials": {
         "openAiApi": {
-          "id": "gZRvcU8iXT74oZnS",
+          "id": "aZbUX8oA9LPwjcEl",
           "name": "OpenAi account"
         }
       },
@@ -396,14 +396,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
       "typeVersion": 1,
       "position": [
-        -992,
+        -1744,
         416
       ],
-      "id": "2e75747e-01d0-45fd-85b0-6d689cf88c3c",
+      "id": "aaf1bd82-604d-4bfd-b3b4-7cc6eda1db68",
       "name": "Mistral",
       "credentials": {
         "mistralCloudApi": {
-          "id": "vLfmgTQBWBINDOxf",
+          "id": "IsKcHfrnwy9gCieS",
           "name": "Mistral Cloud account"
         }
       }
@@ -557,16 +557,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1424,
+        672,
         192
       ],
-      "id": "ba62bfa4-fdd3-44af-9001-936ab9b0d818",
+      "id": "7ed6b02d-64af-42fb-bcf0-b37dcea692db",
       "name": "Save Trade",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
       "credentials": {
         "postgres": {
-          "id": "ofiKMFwnVNzbmUyB",
+          "id": "Nhj8RmVOEtNfJ6qK",
           "name": "Postgres account"
         }
       }
@@ -582,10 +582,10 @@
       "type": "@n8n/n8n-nodes-langchain.chat",
       "typeVersion": 1,
       "position": [
-        752,
+        0,
         0
       ],
-      "id": "f68ab664-454d-44c3-8bd6-97cb9b99c1ab",
+      "id": "3e61a612-51ed-4b54-a751-135ab43f74d5",
       "name": "Respond to Chat",
       "notesInFlow": false
     },
@@ -598,10 +598,10 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.3,
       "position": [
-        -2032,
+        -2784,
         192
       ],
-      "id": "7065f56b-b9c9-4031-88b0-bc0682c5f015",
+      "id": "d121cc03-7963-4507-b4d7-0f45f2a4b483",
       "name": "Chat",
       "webhookId": "81de5df4-57cb-4b2c-bdbc-5855db4fafec"
     },
@@ -613,10 +613,10 @@
       "type": "@n8n/n8n-nodes-langchain.chat",
       "typeVersion": 1,
       "position": [
-        976,
+        224,
         192
       ],
-      "id": "9fd2dd17-3b9e-4be8-9721-b817ab80ca47",
+      "id": "14ae9c25-321a-405d-84bf-6e0fb87b0a90",
       "name": "Which LLM Question"
     },
     {
@@ -629,14 +629,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -544,
+        -1296,
         576
       ],
-      "id": "bb9536e6-0eac-4f62-af05-584921280360",
+      "id": "b03cf536-648d-43be-8fd0-3e9115e1050d",
       "name": "Gemini",
       "credentials": {
         "googlePalmApi": {
-          "id": "cd86rb8vIIPgKJnt",
+          "id": "lXNthlK3K8nZ7nmD",
           "name": "Google Gemini(PaLM) Api account"
         }
       },
@@ -649,14 +649,14 @@
       "type": "@n8n/n8n-nodes-langchain.toolSearXng",
       "typeVersion": 1,
       "position": [
-        -1552,
+        -2304,
         416
       ],
-      "id": "5ded2357-05c1-4a08-8626-67509d3a6cc9",
+      "id": "50e29209-79cc-4b3b-af5c-7f564844f467",
       "name": "SearXNG1",
       "credentials": {
         "searXngApi": {
-          "id": "GdxVcHHsVzCfazYA",
+          "id": "jYfy1ZXECzTic5K8",
           "name": "SearXNG account"
         }
       }
@@ -670,17 +670,17 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1200,
+        448,
         192
       ],
-      "id": "c08cb58d-6b7b-4900-8667-8cc2571cb9bf",
+      "id": "367d6012-a6c1-46e0-b85f-7158def4c448",
       "name": "table trade and market-price creation",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "ofiKMFwnVNzbmUyB",
+          "id": "Nhj8RmVOEtNfJ6qK",
           "name": "Postgres account"
         }
       }
@@ -692,10 +692,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        752,
+        0,
         192
       ],
-      "id": "74401b78-c82d-49c6-8c7c-764c0ec968df",
+      "id": "669fbd2d-8b12-45bc-895a-8121f813222d",
       "name": "Get Vars to save"
     },
     {
@@ -707,17 +707,17 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        752,
+        0,
         384
       ],
-      "id": "02fad078-8315-4420-907e-39251a6e602a",
+      "id": "9545320a-6abf-440f-9d72-6b4ab9a9d703",
       "name": "table market_prices create",
       "retryOnFail": true,
       "alwaysOutputData": true,
       "waitBetweenTries": 5000,
       "credentials": {
         "postgres": {
-          "id": "ofiKMFwnVNzbmUyB",
+          "id": "Nhj8RmVOEtNfJ6qK",
           "name": "Postgres account"
         }
       }
@@ -838,14 +838,14 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1200,
+        448,
         384
       ],
-      "id": "467e5b53-0627-4ce2-8410-d9a0199c2780",
+      "id": "5466f371-748b-44b4-8168-b0edf96eaec4",
       "name": "Insert rows in a table",
       "credentials": {
         "postgres": {
-          "id": "ofiKMFwnVNzbmUyB",
+          "id": "Nhj8RmVOEtNfJ6qK",
           "name": "Postgres account"
         }
       }
@@ -875,10 +875,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        976,
+        224,
         384
       ],
-      "id": "d9b77519-4044-4247-b54f-d6e37fca0a85",
+      "id": "08d771f2-2c3c-496a-b532-1e5ef71e8ac8",
       "name": "Get Candlestick Data1",
       "retryOnFail": true,
       "waitBetweenTries": 5000
@@ -891,14 +891,14 @@
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        -1680,
+        -2432,
         416
       ],
-      "id": "5c17f7d9-a977-44c1-843f-af9b4603467c",
+      "id": "66070acc-a5c0-4112-9bf4-b0d447ecdf51",
       "name": "Postgres Chat Memory",
       "credentials": {
         "postgres": {
-          "id": "ofiKMFwnVNzbmUyB",
+          "id": "Nhj8RmVOEtNfJ6qK",
           "name": "Postgres account"
         }
       }
@@ -911,14 +911,14 @@
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        -864,
+        -1616,
         416
       ],
-      "id": "ed83ceba-7913-4019-9f6b-33988e33f66a",
+      "id": "3829667f-526a-4b80-b3e2-fd53715f48f8",
       "name": "Postgres Chat Memory1",
       "credentials": {
         "postgres": {
-          "id": "ofiKMFwnVNzbmUyB",
+          "id": "Nhj8RmVOEtNfJ6qK",
           "name": "Postgres account"
         }
       }
@@ -1091,11 +1091,6 @@
         ]
       ]
     },
-    "OpenAI": {
-      "ai_languageModel": [
-        []
-      ]
-    },
     "Mistral": {
       "ai_languageModel": [
         [
@@ -1128,11 +1123,6 @@
         ]
       ]
     },
-    "Respond to Chat": {
-      "main": [
-        []
-      ]
-    },
     "Chat": {
       "main": [
         [
@@ -1153,16 +1143,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "Gemini": {
-      "ai_languageModel": [
-        []
-      ]
-    },
-    "Save Trade": {
-      "main": [
-        []
       ]
     },
     "SearXNG1": {
@@ -1247,17 +1227,17 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "88e07d4c-2413-4fed-8481-b9f9e34c26da",
+  "versionId": "a0249d77-f3bb-487e-8685-6732ac67ce53",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
   },
-  "id": "d3MJ2uLGykV0GQyS",
+  "id": "plk2ZYLDRaBWL3WT",
   "tags": [
     {
-      "createdAt": "2025-09-26T05:24:50.234Z",
-      "updatedAt": "2025-09-26T05:24:50.234Z",
-      "id": "OGUR7X5edzpVLq0x",
+      "createdAt": "2025-10-04T07:32:32.821Z",
+      "updatedAt": "2025-10-04T07:32:32.821Z",
+      "id": "Jy3p4X3ZbzMKl6jt",
       "name": "Crypto"
     }
   ]
