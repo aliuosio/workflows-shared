@@ -1,0 +1,1297 @@
+{
+  "name": "Futures-Analyst V2",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Chat').item.json.chatInput }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an information extraction assistant with access to a **SearxXNG tool node** in n8n. Your task is to identify cryptocurrency symbols and trading pair symbols in the provided text, or just the coin name.\nUse searcth toool to get valid oparings\n\n**Rules:**  \n- Return **ONLY** valid cryptocurrency trading pairs and coin names found in the input.  \n- Normalize all outputs to **UPPERCASE**.  \n- Accept common separators between base and quote: `/`, `-`, `_`, whitespace, or none. Examples: `BTCUSDT`, `BTC/USDT`, `btc usdt`, `btc-usdt`.  \n\nOutput fields:  \n- `\"symbol\"`: concatenation of BASE and QUOTE with **no separator** (e.g., `\"SOLUSDT\"`).  \n- `\"pairing\"`: BASE and QUOTE separated by an **underscore** (e.g., `\"SOL_USDT\"`).  \n- Ensure **USDT is always the quote** at the end of the symbol.  \n- If multiple pairs are found, return an **ARRAY of objects** in the order they appear in the text.  \n- If no valid trading pair is found, return a **single-item array with nulls**:  \n   \n Do NOT include any extra text, explanation, or metadata outside the JSON array."
+        }
+      },
+      "id": "288ca274-f65f-4c74-8b08-20a2e97d2510",
+      "name": "Get Symbol",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -2816,
+        112
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"symbol\": \"SOLUSDT\",\n  \"pairing\": \"SOL_USDT\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -2544,
+        336
+      ],
+      "id": "b927818b-59ad-43a9-8fc0-42a4d1ddd5e4",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "40176463-b9d4-4e43-bff7-0aee95e0beb5",
+              "name": "symbol",
+              "value": "={{ $json.output.symbol }}",
+              "type": "string"
+            },
+            {
+              "id": "942db944-fb54-4f12-94ff-54654af05aef",
+              "name": "pairing",
+              "value": "={{ $json.output.pairing }}",
+              "type": "string"
+            },
+            {
+              "id": "fbc11b8e-c7b8-44d3-9444-285dded03e9e",
+              "name": "sessionId",
+              "value": "={{ $('Chat').item.json.sessionId }}",
+              "type": "string"
+            },
+            {
+              "id": "49350b50-99f8-4f10-87b6-de53f58301fc",
+              "name": "chatInput",
+              "value": "={{ $('Chat').item.json.chatInput }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2336,
+        224
+      ],
+      "id": "25834082-ee68-4e26-a992-38a2ce88e870",
+      "name": "Set Vars"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -2928,
+        336
+      ],
+      "id": "3f0619c8-ea1f-47ae-a3e0-da7abc3e637f",
+      "name": "Gemini Flash Lite",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lXNthlK3K8nZ7nmD",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# 🔧 Futures Forecast (MEXC)  \n\nSupports both 4h horizons. Works with `{{ $json.symbol }}`\nAnalyze the provided MEXC market data and the prior agent's signal logic.\n\n---\n\n## 🆓 Inputs\n\n- **symbol:** `{{ $json.symbol }}` (example: `SOLUSDT`)  \n- **timeframe:** 4 hours\n- **now:** `{{ $json.now }}` — optional timestamp, otherwise fetch time.  \n- **Primary source:** MEXC (ticker, depth, trades, funding, OI). If down, state fallback exchange and mark outputs low confidence.\n\n---\n\n## 🔎 Required Live Data\n\n1. MEXC: ticker, orderbook depth, trades, 24h stats, funding rate, open interest, liquidations.  \n2. On-chain (if available): active addresses, txs, whale flows.  \n3. Technical indicators: RSI, MACD, EMAs, ATR, VWAP.  \n4. Market microstructure: bid/ask skew, depth imbalance.  \n5. News & social: headlines, Twitter/Reddit sentiment.  \n6. Funding & sentiment: long/short ratio, funding rate trend.  \n\n---\n\n### 🧭 Task — produce a complete forecast\n\nGenerate the following labeled sections with concise outputs. Use icons in headings.\n\n### ⏱️ Snapshot\n\n- Current price (MEXC) + timestamp (Europe/Berlin CET/CEST).  \n- One-line summary (bullish / bearish / neutral).\n\n### 📈 Price Breakpoints\n\n- **Support levels** (nearest → further), with reason + confidence.  \n- **Resistance levels** (nearest → further), with reason + confidence.\n\n### 🧠 Market Sentiment (“Air”)\n\n- Short overview of sentiment based on funding, long/short ratio, social/news, whale flows.  \n- Mention abrupt shifts if detected.\n\n### 📊 Probability-Based Prognosis\n\n- Probabilities (sum ≈ 100%) for **Breakout ↑**, **Breakdown ↓**, **Consolidation**.  \n- Rationale tied to indicators.\n\n### 🧾 Indicator Analysis\n\nCompact list with value + influence:\n\n- RSI, MACD, EMAs (20/50/200), ATR, VWAP.   (Note: Display RSI, MACD and EMAs value)\n- Bollinger Bands / Keltner Channels  (identify squeeze conditions and volatility compression)\n- Support & Resistance zones and Volume Profile levels (POC/HVN/LVN)\n- Orderbook depth/imbalance.  \n- Funding rate & OI.  \n- On-chain (addresses, txs, whales).  \n- News/social sentiment (Use SearXNG Tool node for internet search)\n\n### 📉/📈 Trading Recommendation\n\n- **Side:** LONG / SHORT / NEUTRAL.  \n- **Entry zone(s):** price + reason.  \n- **Stop-loss:** price/%.  \n- **Take-profit(s):** 1–3 levels.  \n- Optional: simple position sizing rule.  \nTie each to indicator analysis.\n\n### ⚠️ Risk & Edge Cases\n\n- 2–3 invalidation scenarios + what to monitor.\n\n### 📊 Graphical Representation\n\n- Simple distribution (ASCII/Markdown table) **and** a JSON array `probability_distribution`.  \n- If possible, output price bins → probabilities",
+        "options": {
+          "systemMessage": "# Cryptocurrency Futures Trading Analyst\n\nYou are a highly specialized AI assistant acting as a **Cryptocurrency Futures Trading Analyst**.  \nYour role is to deliver **short-term (4-hour) forecasts** for cryptocurrency futures markets in a **data-driven, objective, and professional** manner.  \n\nYou have access to the following tools and **must use them all whenever relevant** to gather data and perform analysis:  \n\n- `Get_Trades_List`: Get a list of trades.  \n- `Get_Order_Book_Depth`: Get the order book depth.  \n- `Get_Contract_Details`: Get contract details.  \n- `Get_Current_price`: Get the current price of a contract.  \n- `Get_Historical_Funding_Rate`: Get the historical funding rate.  \n- `Get_Funding_Rate`: Get the current funding rate.  \n- `Get_Candlestick_Data`: Get candlestick data.  \n- `searxng-search`: A meta search engine for answering questions about current events.  \n- `calculator`: A simple calculator for mathematical expressions.  \n- `thinking_tool`: A tool for complex reasoning and caching information.  \n- `Date_Time`: Manipulate date and time values.  \n\nNOTE: if you fail to get data from an API endpoint you retry up till 3 times\n\nonly intervals allowed on Get_Candlestick_Data tool node: 1m, 5m, 15m, 30m, 60m, 4h, 1d, 1W, 1M\n\nYour responses must always be:  \n- **Structured** with clearly labeled sections.  \n- **Concise, professional, and actionable**.  \n- Based on the **latest available market data from all tools**.  \n- Include a clear **trading recommendation** (long or short) logically tied to your indicator analysis.  \n\nAlways attempt to **combine insights from all tools** to provide the most accurate and actionable forecast.\n\nuse date & time tool connected to get date and time bfore doing API calss\n\n# DATA CONTEXT:\nThe raw data provided comes directly from the **MEXC Exchange APIs**, specifically the OHLC (Candlestick) endpoint. The fields are mapped to the following database schema for a PostgreSQL table:\n- 'price_time' is the candlestick closing timestamp (TIMESTAMP WITHOUT TIME ZONE).\n- 'open', 'high', 'low', 'close_price' are all **DECIMAL** values.\n- **ENSURE** all price fields in the final JSON are represented as **numbers**, not strings.",
+          "returnIntermediateSteps": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -3152,
+        736
+      ],
+      "id": "4fadf9da-f928-47f1-a5e2-0327d2423286",
+      "name": "Analyst",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "model": "codestral-latest",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        -3152,
+        1360
+      ],
+      "id": "3973f113-e662-46ba-a4e4-896323906cd7",
+      "name": "Mistral",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "IsKcHfrnwy9gCieS",
+          "name": "Mistral Cloud account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "trades",
+          "mode": "list",
+          "cachedResultName": "trades"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "entry_target_min": "={{ $('Get Vars to save').item.json.entry_target_min }}",
+            "entry_target_max": "={{ $('Get Vars to save').item.json.entry_target_max }}",
+            "llm": "={{ $('Which LLM Question').item.json.chatInput }}",
+            "coin": "={{ $('Set Vars').item.json.symbol }}",
+            "recommendation_text": "={{ $('Get Vars to save').item.json.recommendation_text }}",
+            "signal_side": "={{ $('Get Vars to save').item.json.signal_side }}",
+            "stop_loss": "={{ $('Get Vars to save').item.json.stop_loss }}",
+            "take_profit_1": "={{ $('Get Vars to save').item.json.take_profit_1 }}",
+            "entry_price": "={{ $('Get Vars to save').item.json.entry_price }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "llm",
+              "displayName": "llm",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "coin",
+              "displayName": "coin",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "entry_price",
+              "displayName": "entry_price",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "signal_side",
+              "displayName": "signal_side",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "entry_target_min",
+              "displayName": "entry_target_min",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "entry_target_max",
+              "displayName": "entry_target_max",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "stop_loss",
+              "displayName": "stop_loss",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "take_profit_1",
+              "displayName": "take_profit_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recommendation_text",
+              "displayName": "recommendation_text",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2128,
+        736
+      ],
+      "id": "838b8956-62e2-45d4-b945-9fbda1912503",
+      "name": "Save Trade",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "postgres": {
+          "id": "Nhj8RmVOEtNfJ6qK",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "message": "={{ $('Analyst').item.json.output }}",
+        "waitUserReply": false,
+        "options": {
+          "memoryConnection": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        -2800,
+        544
+      ],
+      "id": "912c0a49-8bf8-4be1-82bb-364731158fbb",
+      "name": "Respond to Chat",
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseMode": "responseNodes"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -3152,
+        224
+      ],
+      "id": "7f950809-791b-4ce7-b960-76c4c137b27f",
+      "name": "Chat",
+      "webhookId": "81de5df4-57cb-4b2c-bdbc-5855db4fafec"
+    },
+    {
+      "parameters": {
+        "message": "Which LLM was used for this response?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        -2576,
+        736
+      ],
+      "id": "da97be8f-bb73-4a82-bf11-3931d05a9ddf",
+      "name": "Which LLM Question"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -2224,
+        432
+      ],
+      "id": "9d3b7dc9-20e1-4519-85ec-caf35125cfab",
+      "name": "Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lXNthlK3K8nZ7nmD",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSearXng",
+      "typeVersion": 1,
+      "position": [
+        -2672,
+        336
+      ],
+      "id": "221e1871-e378-43dc-9a47-1d1fbba6d07c",
+      "name": "SearXNG1",
+      "credentials": {
+        "searXngApi": {
+          "id": "jYfy1ZXECzTic5K8",
+          "name": "SearXNG account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Create the trades table\nCREATE TABLE IF NOT EXISTS public.trades (\n    id INT GENERATED ALWAYS AS IDENTITY NOT NULL,\n    \n    llm VARCHAR NOT NULL,\n    coin VARCHAR NOT NULL,\n    entry_price DECIMAL NOT NULL,\n    \n    signal_side VARCHAR NOT NULL, -- LONG, SHORT, or NEUTRAL\n    entry_target_min DECIMAL NULL,\n    entry_target_max DECIMAL NULL,\n    stop_loss DECIMAL NULL,\n    take_profit_1 DECIMAL NULL, -- We only track TP1 for backtesting simplicity\n    \n    recommendation_text TEXT NOT NULL, -- The original text block\n    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,\n    \n    CONSTRAINT trades_pk PRIMARY KEY (id),\n    CONSTRAINT chk_signal_side CHECK (signal_side IN ('LONG', 'SHORT', 'NEUTRAL'))\n);\n\n-- Create index for trades\nCREATE INDEX IF NOT EXISTS idx_trades_coin_time ON public.trades (coin, created_at);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2352,
+        736
+      ],
+      "id": "072390f4-f2fb-4915-a42e-1c7d8559d1d1",
+      "name": "table trade and market-price creation",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "Nhj8RmVOEtNfJ6qK",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst inputJson = items[0].json;\n\n// 1. ROBUST INPUT RETRIEVAL AND CORRECTED recommendation_text EXTRACTION\n// Use the original text for parsing all values\nconst analystOutputFullText = inputJson.recommendation_text || inputJson.output || ''; \n\n// Corrected regex to find text between the specified headers\n// It looks for \"### 📉/📈 Trading Recommendation\" and captures everything non-greedily ([\\s\\S]*?) \n// until it hits \"### ⚠️ Risk & Edge Cases\" or the end of the string ($).\nconst recommendationMatch = analystOutputFullText.match(/### 📉\\/📈 Trading Recommendation([\\s\\S]*?)(?=### ⚠️ Risk & Edge Cases|$)/i);\nconst recommendation_text = recommendationMatch ? recommendationMatch[1].trim() : analystOutputFullText;\n\n\n// *** NOTE: The input text does NOT contain a 'Current Price', so entry_price will remain 0. ***\n// We still use the FULL text for all parsing.\nconst entryPriceMatch = analystOutputFullText.match(/\\*\\*Current Price \\(MEXC\\):\\*\\*\\s*([\\d\\.]+)/);\nconst entry_price = entryPriceMatch ? parseFloat(entryPriceMatch[1]) : 0;\n\n// 2. CORRECTED REGEX PATTERNS FOR PRICE EXTRACTION\n\n// Signal Side: Matches \"Side:** NEUTRAL to SHORT bias\" or \"Side:** LONG bias\"\nconst sideMatch = /Side:\\*\\*\\s*(.+?)\\s*bias/.exec(analystOutputFullText) || /Side:\\*\\*\\s*(LONG|SHORT|NEUTRAL)/.exec(analystOutputFullText);\n\nlet signal_side = 'NEUTRAL';\nif (sideMatch) {\n    const sideText = sideMatch[1].toUpperCase();\n    if (sideText.includes('SHORT')) {\n        signal_side = 'SHORT';\n    } else if (sideText.includes('LONG')) {\n        signal_side = 'LONG';\n    } else if (sideText.includes('NEUTRAL')) {\n        signal_side = 'NEUTRAL';\n    }\n} else {\n    signal_side = 'UNKNOWN';\n}\n\n// Entry Zone: Matches \"Entry zone:** Short near 233-235 USDT\"\nconst entryZoneMatch = /Entry zone:\\*\\*\\s*(?:Short|Long)\\s*near\\s*([\\d\\.]+)-([\\d\\.]+)\\s*USDT/.exec(analystOutputFullText);\nconst entry_target_min = entryZoneMatch ? parseFloat(entryZoneMatch[1]) : 0;\nconst entry_target_max = entryZoneMatch ? parseFloat(entryZoneMatch[2]) : 0;\n\n// Stop-Loss: Matches \"Stop-loss:** Above 238 USDT\"\nconst stopLossMatch = /Stop-loss:\\*\\*\\s*(?:Above|Below)\\s*([\\d\\.]+)\\s*USDT/.exec(analystOutputFullText);\nconst stop_loss = stopLossMatch ? parseFloat(stopLossMatch[1]) : 0;\n\n// Take-Profit 1: Matches \"1. 228.5 USDT\"\nconst takeProfitMatch = /1\\.\\s*([\\d\\.]+)\\s*USDT/.exec(analystOutputFullText);\nconst take_profit_1 = takeProfitMatch ? parseFloat(takeProfitMatch[1]) : 0;\n\n\n// 3. RETURN THE RESULT\nreturn [{\n  json: {\n    recommendation_text,\n    entry_price, \n    signal_side, \n    entry_target_min, \n    entry_target_max, \n    stop_loss, \n    take_profit_1\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2800,
+        736
+      ],
+      "id": "a5ce7cc7-bf87-4da4-83d7-780c1e4d04fe",
+      "name": "Get Vars to save"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE IF NOT EXISTS public.market_prices (\n    id INT GENERATED ALWAYS AS IDENTITY NOT NULL,\n    coin VARCHAR NOT NULL,\n    open DECIMAL NOT NULL,\n    high DECIMAL NOT NULL, \n    low DECIMAL NOT NULL,  \n    close_price DECIMAL NOT NULL,\n    period VARCHAR NOT NULL,\n    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,\n    \n    CONSTRAINT market_prices_pk PRIMARY KEY (id),\n    CONSTRAINT market_prices_unq UNIQUE (coin, created_at)\n);\n\nCREATE INDEX IF NOT EXISTS idx_prices_coin_time ON public.market_prices (coin, created_at);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2800,
+        928
+      ],
+      "id": "d4cfd176-14aa-45ef-955b-286b3b21b49b",
+      "name": "table market_prices create",
+      "retryOnFail": true,
+      "alwaysOutputData": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "postgres": {
+          "id": "Nhj8RmVOEtNfJ6qK",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "market_prices",
+          "mode": "list",
+          "cachedResultName": "market_prices"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "open": "={{ $json[1] }}",
+            "high": "={{ $json[2] }}",
+            "low": "={{ $json[3] }}",
+            "close_price": "={{ $json[4] }}",
+            "coin": "={{ $('Set Vars').item.json.symbol }}",
+            "period": "=15m"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "coin",
+              "displayName": "coin",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "open",
+              "displayName": "open",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "high",
+              "displayName": "high",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "low",
+              "displayName": "low",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "close_price",
+              "displayName": "close_price",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "period",
+              "displayName": "period",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2352,
+        928
+      ],
+      "id": "0b2501b3-25a0-415a-ac89-0ce85b922b9c",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "Nhj8RmVOEtNfJ6qK",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.mexc.com/api/v3/klines",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "SOLUSDT"
+            },
+            {
+              "name": "interval",
+              "value": "15m"
+            },
+            {
+              "name": "limit",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2576,
+        928
+      ],
+      "id": "d0afaf64-0a19-4a12-b2df-2d63453ec893",
+      "name": "Get Candlestick Data1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "tableName": "Get_Symbol_Chat_History",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -2800,
+        336
+      ],
+      "id": "4b9eb22f-0116-4130-bd5c-fd5c757c1de6",
+      "name": "Memory",
+      "credentials": {
+        "postgres": {
+          "id": "Nhj8RmVOEtNfJ6qK",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# Agent Name: Data Collector & Preprocessor (MEXC Futures)\n# Role: Primary data ingestion and structuring. Collect all necessary live market and external data for a futures forecast.\n# Confidence: High (Data integrity check only)\n# Output Format: Single, comprehensive JSON object.\n\n## 📥 Inputs:\n- symbol: {{ $json.symbol }} (e.g., SOLUSDT)\n- timeframe: 4 hours\n- now: {{ $json.now }} (Current timestamp in UTC for data synchronization)\n\n## 🎯 Task:\n1. **Primary Source:** Use MEXC for all market data. If MEXC data is unavailable, use a fallback exchange (state which one) and set the 'data_confidence' to 'Low'.\n2. **Fetch and Structure:** Retrieve the following data and structure it into the output JSON format exactly as specified below. Ensure all numerical fields are clean numbers (no currency symbols or trailing characters).\n3. **News Search:** Execute the SearXNG tool node for '{{ $json.symbol }} news headlines' and '{{ $json.symbol }} social media sentiment' and include the raw results.\n\n## 📦 Required Data Blocks:\n\n### 1. Market Data (MEXC):\n- Ticker: Last Price, Bid Price, Ask Price, 24h High, 24h Low.\n- Depth: Top 50 Bid amounts and prices, Top 50 Ask amounts and prices. Calculate Total Bid Volume and Total Ask Volume for top 50.\n- Trades: Last 100 executed trades (price, size, time, side).\n- Funding/OI: Current Funding Rate, Next Funding Rate time, Open Interest (OI) value.\n- Liquidations: Last 4 hours of liquidation data (sum of LONG liquidations, sum of SHORT liquidations).\n\n### 2. Historical Data (MEXC):\n- OHLCV: Retrieve the last 200 candles for the '4 hours' timeframe (Open, High, Low, Close, Volume, Timestamp).\n\n### 3. External & Sentiment Data:\n- On-chain: Active addresses (24h change), Total transactions (24h change), Significant whale flows (if detected). If data is not available, set fields to \"N/A\".\n- Sentiment Raw: The raw output from the SearXNG search for news and social sentiment.\n\n\n## ➡️ Output Instructions:\n* Output the raw collected data structured into logical blocks (e.g., `market_data`, `ohlcv_data`, `external_data`, `raw_sentiment`). This output is the input for the next agent.\n* Ensure all data fields are clearly labeled.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "# Agent Name: Data Collector & Preprocessor (The Scraper)\n# Role: Primary data ingestion and structuring. Collect all necessary live market and external data for a futures forecast based on the provided symbol and 4-hour timeframe.\n# Confidence: High (Data Integrity Check Only)\n# Output Format: Structured JSON (details provided in separate schema).\n\n## 🛠️ Tools Available:\n- Get_Trades_List\n- Get_Order_Book_Depth\n- Get_Contract_Details\n- Get_Current_price\n- Get_Historical_Funding_Rate\n- Get_Funding_Rate\n- Get_Candlestick_Data\n- searxng-search\n- Date_Time\n\n## 📥 Inputs:\n- symbol: {{ $json.symbol }}\n- timeframe: 4 hours\n- now: {{ $json.now }} (Current timestamp)\n\n## 🎯 Task: Data Retrieval and Formatting\n1.  **Time Synchronization:** Use the `Date_Time` tool to convert the input timestamp `{{ $json.now }}` into the required \"Europe/Berlin CET/CEST\" format for the output snapshot.\n2.  **Market Data Fetching:** Use the following tools to collect all required MEXC data for the specified `symbol`:\n    * **Price & Snapshot:** Use `Get_Current_price` and `Get_Contract_Details` (for 24h stats/liquidation data if available here, otherwise mark as 'N/A').\n    * **Order Flow:** Use `Get_Trades_List` (for recent trade history) and `Get_Order_Book_Depth` (to get full depth data for top 50 levels).\n    * **Historical & Funding:** Use `Get_Candlestick_Data` (to get 200 candles for 4h OHLCV) and `Get_Funding_Rate` / `Get_Historical_Funding_Rate`.\n3.  **External Data Fetching:** Use `searxng-search` to query for '{{ $json.symbol }} news headlines' and '{{ $json.symbol }} social media sentiment'.\n4.  **Missing Data Handling (Critical):** Data points explicitly required by the final analysis but not available via the current toolset must be marked as \"MISSING: [Data Point Name]\" in the output structure. (Note: This currently includes **Open Interest**, **Liquidation Data**, and **On-Chain Metrics**, as there are no dedicated tools for these in your list).\n\n## ➡️ Output Instructions:\n* Output the raw collected data structured into the predefined JSON schema (to be detailed later).\n* Ensure all data fields are clearly labeled and ready for the Calculator agent."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1360,
+        224
+      ],
+      "id": "78e7dc98-1b7d-412a-9dba-1202d31e1dd8",
+      "name": "The Scraper",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -2112,
+        448
+      ],
+      "id": "6893383d-a644-45e2-a64d-4f65cfe842a4",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "aZbUX8oA9LPwjcEl",
+          "name": "OpenAi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "tableName": "Analyst_Chat_History",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -1984,
+        448
+      ],
+      "id": "ae05f063-067b-4111-abad-fa15ab2fde94",
+      "name": "Memory1",
+      "credentials": {
+        "postgres": {
+          "id": "Nhj8RmVOEtNfJ6qK",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get Trades List\n\nyou only have to pass limit\nsymbol ist set",
+        "url": "https://api.mexc.com/api/v3/trades",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.symbol }}"
+            },
+            {
+              "name": "limit",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        -576,
+        448
+      ],
+      "id": "85de7c95-a913-4fc2-912a-92db23e766b2",
+      "name": "Get Trades List"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get Order Book Depth\nOnly pass limit as parameter\nlimit: stands for the number of records",
+        "url": "https://api.mexc.com/api/v3/depth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.symbol }}"
+            },
+            {
+              "name": "limit",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        -704,
+        448
+      ],
+      "id": "910f45dc-42b1-40e7-83ae-abfcd403820e",
+      "name": "Get Order Book Depth"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get Contract Details",
+        "url": "https://contract.mexc.com/api/v1/contract/detail",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.pairing }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        -832,
+        448
+      ],
+      "id": "df1ab983-c842-4a6b-a6a2-20f1a0d8ef12",
+      "name": "Get Contract Details"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get Current price",
+        "url": "https://contract.mexc.com/api/v1/contract/ticker",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.pairing }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        -960,
+        448
+      ],
+      "id": "ab4f7b4a-54ec-474a-88bf-4dccb67f15ac",
+      "name": "Get Current price"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get Historical Funding Rate\npass parameters page_num and page_size\nsymbol is automatically set\nNote:\nyou only have to pass page_num and page_size as parameters\nsymbol is set automatically by n8n node",
+        "url": "https://contract.mexc.com/api/v1/contract/funding_rate/history",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.symbol }}"
+            },
+            {
+              "name": "page_num",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
+            },
+            {
+              "name": "page_size",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters2_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        -1088,
+        448
+      ],
+      "id": "ca9b7a1c-cc8d-4395-8bb7-bfbe5b682cfb",
+      "name": "Get Historical Funding Rate"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get Funding Rate\n\nNote:\nsymbol is set automatically by n8n node",
+        "url": "=https://contract.mexc.com/api/v1/contract/funding_rate/{{ $json.pairing }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        -1216,
+        448
+      ],
+      "id": "22863041-16a5-4de5-86c7-9362f4e06d13",
+      "name": "Get Funding Rate"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get Candlestick Data\n\ninterval: 1m, 5m, 15m, 30m, 60m, 4h, 1d, 1W, 1M\nlimit: record count\n\nNOTE:\nUse only these values for interval:\n1m, 5m, 15m, 30m, 60m, 4h, 1d, 1W, 1M",
+        "url": "https://api.mexc.com/api/v3/klines",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.symbol }}"
+            },
+            {
+              "name": "interval",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
+            },
+            {
+              "name": "limit",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters2_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        -1344,
+        448
+      ],
+      "id": "c1073bc9-1642-453b-abd5-7af844bca51c",
+      "name": "Get Candlestick Data"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSearXng",
+      "typeVersion": 1,
+      "position": [
+        -1600,
+        448
+      ],
+      "id": "a1f086ca-950d-45e8-afb2-d263c1cfc723",
+      "name": "SearXNG",
+      "credentials": {
+        "searXngApi": {
+          "id": "jYfy1ZXECzTic5K8",
+          "name": "SearXNG account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        -1472,
+        448
+      ],
+      "id": "4745bf33-85b7-410b-ada9-7dffc707bffd",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        -1856,
+        448
+      ],
+      "id": "43c9d221-e0ae-4c05-ba2d-d5f707cf911a",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "includeTime": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Include_Current_Time', ``, 'boolean') }}",
+        "outputFieldName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Output_Field_Name', ``, 'string') }}",
+        "options": {
+          "timezone": "Europe/Berlin"
+        }
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        -1728,
+        448
+      ],
+      "id": "04d04f3e-fc48-4f22-b683-6cbd964c4ff4",
+      "name": "Date Time"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"metadata\": {\n    \"symbol\": \"SOLUSDT\",\n    \"timeframe\": \"4h\",\n    \"timestamp_utc\": \"2025-10-09T12:00:00Z\",\n    \"timestamp_cet\": \"2025-10-09T14:00:00+02:00\",\n    \"data_confidence\": \"High\"\n  },\n  \"market_data\": {\n    \"last_price\": 23.45,\n    \"bid_price\": 23.40,\n    \"ask_price\": 23.50,\n    \"24h_high\": 24.10,\n    \"24h_low\": 22.80,\n    \"total_bid_volume_top50\": 1200.5,\n    \"total_ask_volume_top50\": 980.3,\n    \"current_funding_rate\": 0.0001,\n    \"next_funding_time_utc\": \"2025-10-09T16:00:00Z\",\n    \"open_interest_usd\": \"MISSING: Open Interest\",\n    \"long_liquidations_4h_usd\": \"MISSING: Long Liquidations\",\n    \"short_liquidations_4h_usd\": \"MISSING: Short Liquidations\",\n    \"raw_depth_data\": [\n      { \"price\": 23.40, \"volume\": 100.5, \"side\": \"bid\" },\n      { \"price\": 23.50, \"volume\": 95.2, \"side\": \"ask\" }\n    ],\n    \"trades\": [\n      { \"price\": 23.45, \"size\": 10.0, \"time\": \"2025-10-09T11:59:00Z\", \"side\": \"buy\" },\n      { \"price\": 23.44, \"size\": 5.0, \"time\": \"2025-10-09T11:58:30Z\", \"side\": \"sell\" }\n    ]\n  },\n  \"ohlcv_data\": [\n    {\n      \"timestamp\": \"2025-10-09T08:00:00Z\",\n      \"open\": 23.00,\n      \"high\": 23.60,\n      \"low\": 22.90,\n      \"close\": 23.45,\n      \"volume\": 1500.0\n    }\n  ],\n  \"external_data\": {\n    \"onchain_active_addresses_24h_change_percent\": \"MISSING: Active Addresses\",\n    \"onchain_txs_24h_change_percent\": \"MISSING: Transactions\",\n    \"whale_flows_detected\": \"MISSING: Whale Flows\"\n  },\n  \"raw_sentiment_search_results\": {\n    \"news_headlines\": [\n      \"SOLUSDT shows resilience amid market volatility\",\n      \"Analysts predict bullish breakout for Solana futures\"\n    ],\n    \"social_media_sentiment\": [\n      \"SOL looking strong today 💪\",\n      \"Solana futures heating up 🔥\"\n    ]\n  }\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -448,
+        448
+      ],
+      "id": "562ea6a0-fd52-4dee-9350-a243eec15c3f",
+      "name": "Structured Output Parser1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get Symbol": {
+      "main": [
+        [
+          {
+            "node": "Set Vars",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Get Symbol",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Vars": {
+      "main": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Flash Lite": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Get Symbol",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyst": {
+      "main": [
+        [
+          {
+            "node": "Respond to Chat",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Vars to save",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "table market_prices create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat": {
+      "main": [
+        [
+          {
+            "node": "Get Symbol",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Which LLM Question": {
+      "main": [
+        [
+          {
+            "node": "table trade and market-price creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SearXNG1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Get Symbol",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "table trade and market-price creation": {
+      "main": [
+        [
+          {
+            "node": "Save Trade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Vars to save": {
+      "main": [
+        [
+          {
+            "node": "Which LLM Question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "table market_prices create": {
+      "main": [
+        [
+          {
+            "node": "Get Candlestick Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Candlestick Data1": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Get Symbol",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "The Scraper": {
+      "main": [
+        []
+      ]
+    },
+    "Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SearXNG": {
+      "ai_tool": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Candlestick Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Funding Rate": {
+      "ai_tool": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Historical Funding Rate": {
+      "ai_tool": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Current price": {
+      "ai_tool": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contract Details": {
+      "ai_tool": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Order Book Depth": {
+      "ai_tool": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Trades List": {
+      "ai_tool": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "The Scraper",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f7090da6-3426-44c1-950d-1ab61494f711",
+  "meta": {
+    "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
+  },
+  "id": "VlGI8H4EWWcxoLaL",
+  "tags": [
+    {
+      "createdAt": "2025-10-04T07:32:32.821Z",
+      "updatedAt": "2025-10-04T07:32:32.821Z",
+      "id": "Jy3p4X3ZbzMKl6jt",
+      "name": "Crypto"
+    }
+  ]
+}

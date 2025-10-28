@@ -1,0 +1,249 @@
+{
+  "name": "Automated Git Commit with AI Messages",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "status",
+        "repositoryPath": "/home/node/workflows-shared"
+      },
+      "id": "git-status",
+      "name": "Git Status",
+      "type": "n8n-nodes-base.git",
+      "typeVersion": 1,
+      "position": [
+        464,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0e150384-3570-4c0c-8e52-7a097a486c9d",
+              "leftValue": "={{ $('Git Status').item.json.modified }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "array",
+                "operation": "lengthGt",
+                "rightType": "number"
+              }
+            },
+            {
+              "id": "81ba45ea-d378-4629-8b2b-bb280babae09",
+              "leftValue": "={{ $('Git Status').item.json.deleted }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "array",
+                "operation": "lengthGt",
+                "rightType": "number"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "if-changes",
+      "name": "If Changes Exist",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Generate a clear, concise Git commit message based on these file changes: Modified: {{$json.modified || 'none'}} Added: {{$json.not_added || 'none'}} Deleted: {{$json.deleted || 'none'}} Staged: {{$json.staged || 'none'}}. Write just the commit message, no explanation.",
+        "options": {
+          "maxIterations": 1,
+          "returnIntermediateSteps": false,
+          "enableStreaming": false
+        }
+      },
+      "id": "ai-agent",
+      "name": "Generate Commit Message",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        240,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "commit",
+        "repositoryPath": "/home/krusty/projects/workflows-shared",
+        "message": "={{ $json.response }}",
+        "options": {}
+      },
+      "id": "git-commit",
+      "name": "Git Commit",
+      "type": "n8n-nodes-base.git",
+      "typeVersion": 1,
+      "position": [
+        592,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "repositoryPath": "/home/krusty/projects/workflows-shared",
+        "options": {}
+      },
+      "id": "git-push",
+      "name": "Git Push",
+      "type": "n8n-nodes-base.git",
+      "typeVersion": 1,
+      "position": [
+        816,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "command": "git -C /home/node/workflows-shared diff --name-status --color=never"
+      },
+      "id": "git-diff",
+      "name": "Get Git Diff",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "add",
+        "repositoryPath": "/home/node/workflows-shared",
+        "pathsToAdd": "."
+      },
+      "id": "2ffbaff0-c6c8-4092-a4c7-e3bf83b3a577",
+      "name": "Git Add",
+      "type": "n8n-nodes-base.git",
+      "typeVersion": 1,
+      "position": [
+        688,
+        -96
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Git Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Git Status": {
+      "main": [
+        [
+          {
+            "node": "Git Add",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Commit Message": {
+      "main": [
+        [
+          {
+            "node": "Git Commit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Git Commit": {
+      "main": [
+        [
+          {
+            "node": "Git Push",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Changes Exist": {
+      "main": [
+        [
+          {
+            "node": "Get Git Diff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Git Diff": {
+      "main": [
+        []
+      ]
+    },
+    "Git Add": {
+      "main": [
+        [
+          {
+            "node": "If Changes Exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionOrder": "v1"
+  },
+  "versionId": "5fc4262c-00aa-42b7-b197-bea763bdee1c",
+  "meta": {
+    "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
+  },
+  "id": "YCMeoBikPfiIi5VI",
+  "tags": []
+}

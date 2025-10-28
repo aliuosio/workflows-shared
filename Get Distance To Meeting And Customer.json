@@ -1,0 +1,293 @@
+{
+  "name": "Get Distance To Meeting And Customer",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://api.openrouteservice.org/geocode/search?api_key=eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImQxOGQxOGQyZmQyZDRmNGFhMjkyMzFhOTQwZWQyMDkzIiwiaCI6Im11cm11cjY0In0=&text={{ $json.customerAddress }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        -400
+      ],
+      "id": "13d73e41-73e5-4077-86c9-ca3a78bc4a05",
+      "name": "Get Coordinates Customer",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "url": "=https://api.openrouteservice.org/geocode/search?api_key=eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImQxOGQxOGQyZmQyZDRmNGFhMjkyMzFhOTQwZWQyMDkzIiwiaCI6Im11cm11cjY0In0=&text={{ $('Set Addresses').item.json.meetingAddress }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1168,
+        -400
+      ],
+      "id": "d8ab44aa-e1cf-4615-98f0-7bff94ef34eb",
+      "name": "Get Coordinates Meeting",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5c77d779-9d0c-42e9-b613-79e857d3d201",
+              "name": "customerAddress",
+              "value": "={{ encodeURIComponent(`${$('Start').item.json.Strasse} ${$('Start').item.json.Hausnummer}, ${$('Start').item.json.Ort}, ${$('Start').item.json.Land}`) }}",
+              "type": "string"
+            },
+            {
+              "id": "8779fc0f-a87b-4e0f-8136-7ed538c546a0",
+              "name": "meetingAddress",
+              "value": "={{ encodeURIComponent(`${$('Start').item.json.Treffpunkt}`) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        496,
+        -400
+      ],
+      "id": "5d165051-ecb3-4f96-8469-52102ab6ade2",
+      "name": "Set Addresses"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openrouteservice.org/v2/matrix/driving-car",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImQxOGQxOGQyZmQyZDRmNGFhMjkyMzFhOTQwZWQyMDkzIiwiaCI6Im11cm11cjY0In0="
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locations\": [\n    [{{ $('Start').item.json.body_data_message_locationMessage_degreesLongitude }}, {{ $('Start').item.json.body_data_message_locationMessage_degreesLatitude }}],\n    [{{ $json.features[0].geometry.coordinates[0] }}, {{ $json.features[0].geometry.coordinates[1] }}]\n  ],\n  \"metrics\": [\"distance\"]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        944,
+        -400
+      ],
+      "id": "42515bd8-39d5-4ac1-844e-4e7952b14a50",
+      "name": "Participant Distance To Customer"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openrouteservice.org/v2/matrix/driving-car",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImQxOGQxOGQyZmQyZDRmNGFhMjkyMzFhOTQwZWQyMDkzIiwiaCI6Im11cm11cjY0In0="
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locations\": [\n    [{{ $('Start').item.json.body_data_message_locationMessage_degreesLongitude }}, {{ $('Start').item.json.body_data_message_locationMessage_degreesLatitude }}],\n    [{{ $json.features[0].geometry.coordinates[0] }}, {{ $json.features[0].geometry.coordinates[1] }}]\n  ],\n  \"metrics\": [\"distance\"]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1392,
+        -400
+      ],
+      "id": "2e531667-771e-4b64-b8c4-6206d8372d1f",
+      "name": "Participant Distance To Meeting"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e1d6eedf-6a38-4d51-9f11-305f5b6e7bd8",
+              "name": "distanceMeeting",
+              "value": "={{ $('Participant Distance To Meeting').item.json.distances[0][1] }}",
+              "type": "number"
+            },
+            {
+              "id": "8f017ee3-591a-47f2-9cb2-a5d498c7a5cb",
+              "name": "distanceCustomer",
+              "value": "={{ $('Participant Distance To Customer').item.json.distances[0][1] }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1600,
+        -400
+      ],
+      "id": "03ab8071-97d3-419d-8fea-d87a4b62050b",
+      "name": "Return"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "Hausnummer",
+              "type": "any"
+            },
+            {
+              "name": "Strasse",
+              "type": "any"
+            },
+            {
+              "name": "Land",
+              "type": "any"
+            },
+            {
+              "name": "Ort",
+              "type": "any"
+            },
+            {
+              "name": "Treffpunkt",
+              "type": "any"
+            },
+            {
+              "name": "body_data_message_locationMessage_degreesLongitude",
+              "type": "any"
+            },
+            {
+              "name": "body_data_message_locationMessage_degreesLatitude",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "id": "588db9ed-d8f6-4008-a809-b08f7f0cbdd7",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        288,
+        -400
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get Coordinates Customer": {
+      "main": [
+        [
+          {
+            "node": "Participant Distance To Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Coordinates Meeting": {
+      "main": [
+        [
+          {
+            "node": "Participant Distance To Meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Addresses": {
+      "main": [
+        [
+          {
+            "node": "Get Coordinates Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Participant Distance To Customer": {
+      "main": [
+        [
+          {
+            "node": "Get Coordinates Meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Set Addresses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Participant Distance To Meeting": {
+      "main": [
+        [
+          {
+            "node": "Return",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3ff063c2-0b84-44c0-b3cb-6f52dd710635",
+  "meta": {
+    "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
+  },
+  "id": "a9ygEL9Jmqq1A9Of",
+  "tags": [
+    {
+      "createdAt": "2025-09-26T23:32:43.220Z",
+      "updatedAt": "2025-09-26T23:32:43.220Z",
+      "id": "AlfkVZbPeTDl9ohv",
+      "name": "Subworkflow"
+    },
+    {
+      "createdAt": "2025-09-26T04:51:44.674Z",
+      "updatedAt": "2025-09-26T04:51:44.674Z",
+      "id": "VhDUKv8NxvuBr0Fb",
+      "name": "Energy44"
+    }
+  ]
+}

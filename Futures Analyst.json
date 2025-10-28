@@ -1,0 +1,1041 @@
+{
+  "name": "Futures Analyst",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# Futures Analyst\n\n> **All output: Bold all values and conclusions. Never add, remove, or reorder sections unless instructed. Use only Technical Indicators given by previous node for calculation; list missing data.**\n\n---\n\n- Be concise. Clearly state any limitations.\n\n---\n\n## 📊 Current Price\n\n- **Price:** {{price}} USD\n- **Datetime:** d:m:y h:m\n- **Timezone:** Europe/Berlin\n\n---\n\n## 📝 Summary\n\n- **Brief:** Clearly state overall sentiment and forecast direction (bullish/bearish/neutral) with a short explanation if needed.\n\n---\n\n## 📈 Price Levels\n\n- **Resistance:** {{resistance_1}}, {{resistance_2}} (**justify using ATR and recent price action**)\n- **Support:** {{support_1}}, {{support_2}} (**justify using ATR and recent price action**)\n\n## 🧱 Buy/Sell Walls\n\n- **Buy Walls:** {{buy_walls}} (**significant buy limit orders below current price**)\n- **Sell Walls:** {{sell_walls}} (**significant sell limit orders above current price**)\n  \n---\n\n## 📊 Sentiment \n> Get Setiment through Internet Search using SearXNG\n\n- **Overall:** 🟢 / 🔴 / ⚪️\n- **Potential Shifts:** Key levels to watch.\n\n---\n\n## 🔍 Analysis\n\n> **write the Interpretaion for the Indicators beside the value**\n\n- **MACD (12,26,9):** {{macd_status}}\n- **EMAs:** {{ema_status}}\n- **RSI (14):** {{rsi_status}}\n- **Bollinger Bands (20,2):** {{bbands_status}}\n- **ATR (14):** {{atr_status}} (**use to guide realistic support/resistance distances**)\n\n---\n\n## 📉 Forecast\n\n- **Direction:** {{forecast_direction}} toward {{target_price}}.\n- **Forecast Horizon:** Valid for the next 4 hours unless otherwise stated.\n\n---\n\n### 📈 Trade Setup\n\n- **Direction:** {{direction}} 🟢/🔴 (**justify direction using trend indicators and recent price action**)\n- **Entry:** {{entry_price}} USD (**confirm within 2% of current price unless strong justification provided**)\n- **Stop Loss:** {{stop_loss}} USD (**set at least 1.5x–2x ATR below/above entry to account for volatility and avoid noise triggers; justify placement using swing lows/highs or technical structure**)\n- **Take Profit:**\n  - **TP1:** {{tp1}} USD (**R:R minimum 1:2; align with nearest resistance/support or swing high/low**)\n  - **TP2:** {{tp2}} USD (**optional; second target for partial profits; justify using resistance levels, Fibonacci extensions, or volume clusters**)\n- **Position Size:** {{position_size}}% (**risk per trade; recommended 1–2% unless high conviction; always adjust for stop distance and volatility**)\n- **Risk Limit:** Max Drawdown: {{max_drawdown}}% (**daily ≤5%, weekly ≤10% recommended**)a",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "# 📊 Crypto Futures Analysis\n\nYou are an **expert Futures analyst**. Use **MongoDB** and the **Technical Indicators Tool**. Provide a concise, justified 4-hour forecast with clear risk management.\n\n---\n\n## Output Rules\n\n- Use only the **last 20–50 4h candles/trades** for analysis.\n- Justify **all levels and conclusions** with data (ATR, swing highs/lows, volume clusters). Clearly specify **sentiment** (bullish/bearish/neutral) and the **forecast direction**.\n- If data is missing, check SearXNG and state what is unavailable.\n- Use **bold** for all key values. Use markdown headings with emojis/icons.\n\n---\n\n## Input Format\n\nYou will receive data from the MongoDB Retrieval node as an array of JSON objects, where each object represents a single document/record from the database.\n\n### MongoDB Retrieval\n\nEach document will have the following structure:\n\n- `timestamp`: ISO timestamp when the data was recorded\n- `symbol`: The trading pair/symbol (e.g., 'BTC/USDT')\n- `endpoint`: The data source/API endpoint that generated this record\n- `data`: The main payload containing the actual data (candles, trades, etc.)\n- `_id`: MongoDB's unique document identifier (ObjectId)\n- `id`: Additional identifier (may be a string or number)\n\n### Data Structure Notes\n\n- The `data` field will contain the actual market data (OHLCV for candles, trade details, etc.)\n- Multiple documents may be returned for the same symbol but from different endpoints\n- The most recent data will be at the end of the array\n\n## Tools\n\n> **Use the Calculator tool and Think tool for all calculations and reasoning to save Resources**\n\n- **MongoDB Retrieval:** Candles, trades, order book, funding, contracts (last 20–50 only).\n- **Technical Indicators Tool:** EMAs, MACD, RSI, Bollinger Bands, ATR, etc. — use it to generate indicator values from the latest data.\n- **SearXNG:** For news/sentiment if needed or data not in MongoDB or through the Technical Indicators Tool.\n- **Calculator:** For calculations (This is a classic calculator like from Texas Instruments).\n- **Think:** For reasoning, memory, and conversation context.\n\n---\n\n## 📝 Additional Guidelines\n\n- For **support and resistance levels**, always justify them using ATR, swing highs/lows, volume clusters, or other relevant price action (e.g. recent candle rejection).\n- **Bollinger Bands:** Specify all three levels (middle, upper, lower) based on the correct SMA.\n- **Forecast Direction:** Always clearly state the **forecast direction** and potential shift scenarios (e.g. \"bullish but watch for rejection at key resistance levels\").\n- If using multiple indicators (e.g. EMA 8/12/21/26, MACD, RSI, Bollinger Bands), **explain how each aligns or conflicts with your forecast**.\n- If **ATR is not provided** by the Technical Indicators Tool, calculate it yourself using the formula: ATR = EMA of True Range over 14 periods, where True Range = max(high - low, abs(high - previous close), abs(low - previous close)). Use MongoDB data for high, low, and close prices.\n- **Trade Recommendations:** Only provide trade recommendations when signals are clear and multiple indicators align. If the market conditions are unclear, mixed, or lack strong confirmation, explicitly state to **wait for better confirmation** rather than forcing a trade.\n- **Use the Calculator tool for all mathematical operations**\n- **Use the Think tool to document your reasoning process**\n\n---\n\n## 🛡️ Analyst Principles\n\n- **Probability Focus:** Only trade high-conviction setups.\n- **Data-Driven:** Use MongoDB data.\n- **Documented:** Clearly record trade plans and assumptions.\n\n---\n\n- **Remember:** Analyze critically, justify every conclusion, and if uncertain—state it clearly.\n- **Remember:** Use the Calculator tool for all mathematical operations.\n- **Remember:** Use the Think tool to document your reasoning process.\n- **Remember:** Use the Technical Indicators Tool for EMAs, MACD, RSI, Bollinger Bands, ATR.\n🚀📊\n",
+          "returnIntermediateSteps": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -1984,
+        64
+      ],
+      "id": "5bb3f9c2-874d-4e76-a394-f433f15eb7ab",
+      "name": "AI Agent",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "includeTime": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Include_Current_Time', ``, 'boolean') }}",
+        "outputFieldName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Output_Field_Name', ``, 'string') }}",
+        "options": {
+          "timezone": "Europe/Berlin"
+        }
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        -2032,
+        288
+      ],
+      "id": "160c6574-2076-4550-96be-37678ffa533b",
+      "name": "Date Time"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        -1904,
+        288
+      ],
+      "id": "4f115fab-f988-4d94-a029-30952dceb32c",
+      "name": "Think"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        -1776,
+        288
+      ],
+      "id": "dce8eadf-27dd-4adb-9b66-e0d9f6cba7d0",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "model": "codestral-latest",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        -3968,
+        288
+      ],
+      "id": "112dd6c8-577c-4405-aa3c-c02c558d08e0",
+      "name": "Mistral",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "vLfmgTQBWBINDOxf",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.mexc.com/api/v3/ticker/price",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.symbol }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "queryParameterArrays": "repeat",
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "name": "Get Current Price",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -3152,
+        -512
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "id": "de7a049e-00ab-4c4b-998f-a1e25e271199"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.mexc.com/api/v3/klines",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{$json.symbol}}"
+            },
+            {
+              "name": "interval",
+              "value": "={{ $json.kline.interval }}"
+            },
+            {
+              "name": "limit",
+              "value": "={{ $json.kline.limit }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "queryParameterArrays": "repeat",
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "name": "Get Candlestick Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -3152,
+        -320
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "id": "bb5ccea1-185c-4fc4-9329-d3012f27a18b"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -4192,
+        64
+      ],
+      "id": "7ff19149-7b72-41f3-ad3a-993411b8df36",
+      "name": "Chat",
+      "webhookId": "4afbf060-46e6-4d53-b305-5010406e58a7"
+    },
+    {
+      "parameters": {
+        "url": "=https://contract.mexc.com/api/v1/contract/funding_rate",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{$json.symbol}}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "queryParameterArrays": "brackets",
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "name": "Get Current Funding Rate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -3152,
+        -128
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "id": "fe41dc1a-6637-4174-a865-42700b975aa0"
+    },
+    {
+      "parameters": {
+        "url": "=https://contract.mexc.com/api/v1/contract/funding_rate/history",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.symbol }}"
+            },
+            {
+              "name": "page_num",
+              "value": "={{ $json.funding.pageNum }}"
+            },
+            {
+              "name": "page_size",
+              "value": "={{ $json.funding.pageSize }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "name": "Get Historical Funding Rate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -3152,
+        64
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "id": "420c7293-3fc7-46b0-9284-7aed156a49ce"
+    },
+    {
+      "parameters": {
+        "url": "=https://contract.mexc.com/api/v1/contract/detail",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{ $json.symbol }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "name": "Get Contract Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -3152,
+        256
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "id": "eb011ae6-223f-4084-a74e-d0a8db02482d"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.mexc.com/api/v3/trades",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{$json.symbol}}"
+            },
+            {
+              "name": "limit",
+              "value": "={{ $json.trades.limit }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "queryParameterArrays": "brackets",
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "name": "Get Trades List",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -3152,
+        448
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000,
+      "id": "faed17c7-fc4e-4785-bf26-d7ab986d6564"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.mexc.com/api/v3/depth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "={{$json.symbol}}"
+            },
+            {
+              "name": "limit",
+              "value": "={{ $json.depth.limit }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "name": "Get Order Book Depth",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -3152,
+        640
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000,
+      "id": "72fb6bd1-4d14-4afc-b620-01181cded515"
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "### Optimized Prompt\n\nYou are an AI assistant whose only task is to detect if a cryptocurrency is mentioned in the user’s input.  \n\n1. Identify the cryptocurrency name or ticker.  \n2. Use the **SearXNG tool** to confirm the correct symbol and its USDT trading pair.  \n3. Return only the trading pair in the format `[SYMBOL]USDT` (e.g., `BTCUSDT`, `SOLUSDT`).  \n4. If no cryptocurrency is mentioned, return nothing.  \n\nDo not add explanations or perform any other action.  "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -3856,
+        64
+      ],
+      "id": "084026a4-6fb8-46e4-9be8-0d43ca04feec",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"symbol\": \"SOLUSDT\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -3584,
+        288
+      ],
+      "id": "4ab5aac5-177d-4623-8bc9-37a4d67b210f",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date();\nconst cetOptions = { \n  timeZone: 'Europe/Berlin',\n  year: 'numeric', \n  month: 'short', \n  day: 'numeric',\n  hour: '2-digit', \n  minute: '2-digit',\n  second: '2-digit',\n  hour12: false\n};\n\nconst cetDatetime = now.toLocaleString('de-DE', cetOptions);\n\nreturn {\n  json: {\n    symbol: $input.first().json.output.symbol,\n    symbolFormatted: $input.first().json.output.symbol.replace(\"USDT\", \"_USDT\"),\n    cetDatetime,                \n    kline: { \n      interval: \"4h\", \n      limit: 120 \n    },\n    depth: { \n      limit: 20 \n    },\n    trades: { \n      limit: 500 \n    },\n    funding: { \n      pageSize: 50, \n    }\n  }\n};\n"
+      },
+      "name": "Set Vars",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        -3376,
+        64
+      ],
+      "id": "d8010692-1b42-496d-a000-c4259aa3d8e4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5e9ee778-5ef0-4f6e-9f46-59f09528ceb1",
+              "name": "endpoint",
+              "value": "order-book-depth",
+              "type": "string"
+            },
+            {
+              "id": "0855eebb-1a41-4841-9e3a-1b62d7cb1e6f",
+              "name": "data",
+              "value": "={{ $json }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2928,
+        640
+      ],
+      "id": "0813c4ef-4663-472c-a1c3-65d3e5d23e1c",
+      "name": "Edit Fields6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5e9ee778-5ef0-4f6e-9f46-59f09528ceb1",
+              "name": "endpoint",
+              "value": "trade-list",
+              "type": "string"
+            },
+            {
+              "id": "0855eebb-1a41-4841-9e3a-1b62d7cb1e6f",
+              "name": "data",
+              "value": "={{ $json }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2928,
+        448
+      ],
+      "id": "9d38b964-9c56-495f-8b13-701bbdb84a42",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5e9ee778-5ef0-4f6e-9f46-59f09528ceb1",
+              "name": "endpoint",
+              "value": "contract-details",
+              "type": "string"
+            },
+            {
+              "id": "bb3f5b3c-f1a8-48ff-b9c7-891cb7f9c15a",
+              "name": "data",
+              "value": "={{ $json.data }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2928,
+        256
+      ],
+      "id": "6f8f3060-e7be-4af9-a5c3-3346e599e2f8",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5e9ee778-5ef0-4f6e-9f46-59f09528ceb1",
+              "name": "endpoint",
+              "value": "historical-funding",
+              "type": "string"
+            },
+            {
+              "id": "0855eebb-1a41-4841-9e3a-1b62d7cb1e6f",
+              "name": "data",
+              "value": "={{ $json.data }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2928,
+        64
+      ],
+      "id": "63a75f53-8d2c-4aa0-bf9d-5a75a571c80e",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5e9ee778-5ef0-4f6e-9f46-59f09528ceb1",
+              "name": "endpoint",
+              "value": "funding",
+              "type": "string"
+            },
+            {
+              "id": "0855eebb-1a41-4841-9e3a-1b62d7cb1e6f",
+              "name": "data",
+              "value": "={{ $json.data[3] }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2928,
+        -128
+      ],
+      "id": "f199562d-4fa0-46fc-8838-0d5052d90d83",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5e9ee778-5ef0-4f6e-9f46-59f09528ceb1",
+              "name": "endpoint",
+              "value": "candlestick",
+              "type": "string"
+            },
+            {
+              "id": "0855eebb-1a41-4841-9e3a-1b62d7cb1e6f",
+              "name": "data",
+              "value": "={{ $json }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2928,
+        -320
+      ],
+      "id": "868a0179-d32b-4e37-9b88-088fbdc71a65",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5e9ee778-5ef0-4f6e-9f46-59f09528ceb1",
+              "name": "endpoint",
+              "value": "price",
+              "type": "string"
+            },
+            {
+              "id": "fca1637b-29a6-423b-b581-d160854021f8",
+              "name": "data",
+              "value": "={{ $json }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2928,
+        -512
+      ],
+      "id": "54f8b702-34d2-4ab0-9ad3-4dc363035af8",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "numberInputs": 7
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -2704,
+        -16
+      ],
+      "id": "0b1fcc3e-0a29-4a2f-b4b5-33fe74af4cc9",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Prepare for MongoDB - n8n Code Node\n * - Requires each merged item to have an 'endpoint' field (set by Set node or HTTP node)\n * - Fallbacks to nodeMap if not present\n * - Handles price, candlestick, and funding data formats\n * - Enhanced funding data handling with optimized symbol matching\n * - Filters funding data to only keep the relevant entry for the queried symbol\n */\n\n// Helper: Extract symbol from data, fallback to inputSymbol or 'UNKNOWN'\nfunction extractSymbol(data, inputSymbol, endpoint) {\n  // Direct symbol property\n  if (data.symbol) return data.symbol;\n  \n  // For funding data which might have data.data[0].symbol format\n  if (endpoint === 'funding' && data.data && Array.isArray(data.data) && data.data.length > 0) {\n    // Always prioritize the inputSymbol if provided\n    if (inputSymbol && inputSymbol !== 'UNKNOWN') {\n      return inputSymbol;\n    }\n    \n    // If no inputSymbol provided, use the first entry\n    const fundingSymbol = data.data[0].symbol;\n    if (fundingSymbol) {\n      // Normalize symbol format (e.g., BTC_USDT -> BTCUSDT)\n      return fundingSymbol.replace(/_([A-Z0-9]+)$/i, '$1');\n    }\n  }\n  \n  // For array data with objects containing symbol\n  if (Array.isArray(data) && data[0] && typeof data[0] === 'object' && data[0].symbol) {\n    return data[0].symbol;\n  }\n  \n  return inputSymbol || 'UNKNOWN';\n}\n\n// Helper: Extract endpoint from data or fallback to nodeMap\nfunction extractEndpoint(item, nodeMap, idx) {\n  // First check json.endpoint which is most specific\n  if (item.json && item.json.endpoint) return item.json.endpoint;\n  \n  // Then check item.endpoint (might be set by Edit node)\n  if (item.endpoint) return item.endpoint;\n  \n  // Check if this is funding data by structure\n  if (item.json && item.json.data && Array.isArray(item.json.data) && \n      item.json.data.length > 0 && item.json.data[0].fundingRate !== undefined) {\n    return 'funding';\n  }\n  \n  // Fall back to nodeMap based on position\n  if (nodeMap && nodeMap[idx]) return nodeMap[idx];\n  \n  return 'unknown';\n}\n\n// Data processors for each endpoint type\nconst dataProcessors = {\n  // Process candlestick data\n  candlestick: (data, symbol) => {\n    if (!Array.isArray(data.data)) return data;\n    \n    return {\n      openTime: data.data[0],\n      open: data.data[1],\n      high: data.data[2],\n      low: data.data[3],\n      close: data.data[4],\n      volume: data.data[5],\n      closeTime: data.data[6],\n      quoteAssetVolume: data.data[7]\n    };\n  },\n  \n  // Process price data\n  price: (data, symbol) => {\n    return data.price ? { price: data.price } : data;\n  },\n  \n  // Process contract details data\n  'contract-details': (data, symbol) => {\n    // Extract contract details from the appropriate data structure\n    const contractData = (data.success && data.data) ? data.data : \n                        (data.data && data.data.symbol) ? data.data : null;\n    \n    if (!contractData) return data;\n    \n    // Return only the essential contract details\n    return {\n      symbol: contractData.symbol,\n      displayName: contractData.displayName,\n      displayNameEn: contractData.displayNameEn,\n      baseCoin: contractData.baseCoin,\n      quoteCoin: contractData.quoteCoin,\n      contractSize: contractData.contractSize,\n      minLeverage: contractData.minLeverage,\n      maxLeverage: contractData.maxLeverage,\n      priceScale: contractData.priceScale,\n      minVol: contractData.minVol,\n      maxVol: contractData.maxVol,\n      takerFeeRate: contractData.takerFeeRate,\n      makerFeeRate: contractData.makerFeeRate,\n      maintenanceMarginRate: contractData.maintenanceMarginRate,\n      initialMarginRate: contractData.initialMarginRate,\n      liquidationFeeRate: contractData.liquidationFeeRate,\n      riskLimitCustom: contractData.riskLimitCustom\n    };\n  },\n  \n  // Process funding data\n  funding: (data, symbol) => {\n    if (!data.data || !Array.isArray(data.data)) return data;\n    \n    // Find the matching funding data entry\n    const targetSymbolData = findMatchingFundingData(data.data, symbol);\n    \n    if (targetSymbolData) {\n      return {\n        fundingRate: targetSymbolData.fundingRate,\n        maxFundingRate: targetSymbolData.maxFundingRate,\n        minFundingRate: targetSymbolData.minFundingRate,\n        collectCycle: targetSymbolData.collectCycle,\n        nextSettleTime: targetSymbolData.nextSettleTime,\n        timestamp: targetSymbolData.timestamp,\n        originalSymbol: targetSymbolData.symbol,\n        matchType: 'exact'\n      };\n    } else {\n      return {\n        fundingRate: null,\n        maxFundingRate: null,\n        minFundingRate: null,\n        noMatchFound: true,\n        queriedSymbol: symbol,\n        availableSymbols: data.data.slice(0, 3).map(item => item.symbol || 'unknown')\n      };\n    }\n  },\n  \n  // Process historical funding data\n  'historical-funding': (data, symbol) => {\n    if (!data.data) return data;\n    \n    // If data is an array of historical funding entries\n    if (Array.isArray(data.data)) {\n      // Filter entries for the specific symbol if possible\n      const relevantEntries = data.data.filter(entry => {\n        if (!entry.symbol) return false;\n        \n        // Try different symbol formats for matching\n        const entrySymbol = entry.symbol.toUpperCase();\n        const normalizedSymbol = symbol.toUpperCase();\n        const symbolWithoutQuote = normalizedSymbol.replace(/USDT$|USD$/i, '');\n        \n        return entrySymbol.includes(symbolWithoutQuote) || \n               entrySymbol.replace(/_/g, '').includes(symbolWithoutQuote);\n      });\n      \n      // Return filtered entries or original data if no matches\n      return relevantEntries.length > 0 ? { \n        entries: relevantEntries,\n        count: relevantEntries.length,\n        originalSymbol: symbol\n      } : data;\n    }\n    \n    return data;\n  },\n  \n  // Process orderbook data\n  orderbook: (data, symbol) => {\n    // Check if data has the expected orderbook structure\n    if (!data.bids || !data.asks) return data;\n    \n    // Return a clean orderbook structure\n    return {\n      bids: data.bids,\n      asks: data.asks,\n      timestamp: data.timestamp || Date.now(),\n      lastUpdateId: data.lastUpdateId\n    };\n  },\n  \n  // Process trades data\n  trades: (data, symbol) => {\n    // If data is an array of trades\n    if (Array.isArray(data)) {\n      // Return the trades with a count\n      return {\n        trades: data,\n        count: data.length,\n        timestamp: Date.now()\n      };\n    }\n    \n    // If data has a trades property that is an array\n    if (data.trades && Array.isArray(data.trades)) {\n      return {\n        trades: data.trades,\n        count: data.trades.length,\n        timestamp: data.timestamp || Date.now()\n      };\n    }\n    \n    return data;\n  }\n};\n\n// Helper: Find matching funding data entry\nfunction findMatchingFundingData(fundingDataArray, symbol) {\n  // Normalize symbol formats for matching\n  const normalizedSymbol = symbol.toUpperCase();\n  const symbolWithoutQuote = normalizedSymbol.replace(/USDT$|USD$/i, '');\n  const underscoreFormat = symbolWithoutQuote + '_' + (normalizedSymbol.includes('USDT') ? 'USDT' : 'USD');\n  \n  // Try multiple matching strategies in order of precision\n  let match = fundingDataArray.find(item => \n    item.symbol && item.symbol.toUpperCase() === underscoreFormat\n  );\n  \n  // Match by coin part if direct match fails\n  if (!match) {\n    match = fundingDataArray.find(item => {\n      if (!item.symbol) return false;\n      const itemCoin = item.symbol.split('_')[0].toUpperCase();\n      return itemCoin === symbolWithoutQuote;\n    });\n  }\n  \n  // Fuzzy match as last resort\n  if (!match && symbolWithoutQuote.length >= 2) {\n    match = fundingDataArray.find(item => {\n      if (!item.symbol) return false;\n      return item.symbol.toUpperCase().startsWith(symbolWithoutQuote);\n    });\n  }\n  \n  return match;\n}\n\n// Normalize symbol format (e.g., SOL_USDT -> SOLUSDT)\nfunction normalizeSymbol(symbol) {\n  return symbol.replace(/_/g, '');\n}\n\n// Main: Prepare MongoDB records\nfunction prepareMongoRecords(items, inputSymbol, nodeMap) {\n  let lastEndpoint = 'unknown';\n  \n  return items.map((item, idx) => {\n    const json = item.json || {};\n    \n    // Extract endpoint\n    let endpoint = extractEndpoint(item, nodeMap, idx) || json.endpoint || lastEndpoint;\n    if (endpoint && endpoint !== 'unknown') lastEndpoint = endpoint;\n    \n    // Create a copy of the data\n    let data = { ...json };\n    \n    // Extract symbol based on endpoint and data structure\n    let symbol = extractSymbol(data, inputSymbol, endpoint);\n    \n    // Remove redundant fields from data\n    delete data.endpoint;\n    delete data.symbol;\n    \n    // Process data based on endpoint type using the appropriate processor\n    if (dataProcessors[endpoint]) {\n      data = dataProcessors[endpoint](data, symbol);\n      \n      // Normalize symbol format if needed\n      if (endpoint === 'contract-details') {\n        symbol = normalizeSymbol(symbol);\n      }\n    }\n    \n    // Return the standardized MongoDB document\n    return {\n      timestamp: Date.now(),\n      symbol,\n      endpoint,\n      data\n    };\n  });\n}\n\n// n8n context\nconst inputSymbol = $json.symbol || 'UNKNOWN';\n\n// If using Merge node (order known), set nodeMap accordingly\n// The index corresponds to the position in the merged items array\nconst nodeMap = {\n  0: 'price',\n  1: 'candlestick',\n  2: 'funding',\n  3: 'contract-details',\n  4: 'historical-funding',\n  5: 'orderbook',\n  6: 'trades'\n};\n\n// Process all items\nconst results = prepareMongoRecords($items(), inputSymbol, nodeMap);\n\n// Return the processed results\nreturn results;"
+      },
+      "name": "Prepare Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        -2480,
+        64
+      ],
+      "id": "03673a0b-903d-481d-b26c-8765cb86b267"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- Start of Corrected TA Code ---\n\n// Fix: Use the n8n-specific variable $json, which holds the input data\n// If the previous node was a Merge or a simple HTTP request, $json holds the item's data.\n// However, the previous script returns an array of items. When this array enters the\n// next Code Node, each element in the array is processed as an individual item.\n// A common pattern is to process the whole array from a preceding node, \n// so we'll adjust to expect an array of items from the previous script's output\n// which is typically accessed via the global '$items' function, or if the node is set\n// to 'Run Once For All Items', the data might be in a complex structure.\n\n// Since the goal is to work with the *output* of the first script, \n// and the first script's output is an array of standardized objects:\n// [{ timestamp: ..., symbol: 'BTCUSDT', endpoint: 'candlestick', data: { openTime: ..., close: '40000', ... } }]\n// The safest way is to assume the *entire array* is passed via a property if using \n// a dedicated workflow step, or that we are operating on the single current item ($json)\n\n// We'll proceed by correcting the original assumption:\n// The code below assumes that the historical candle data (the *array* of candles)\n// has been placed into the current item's JSON, perhaps under a 'candles' key, \n// or that the entire array of historical data is what is being processed.\n\n// Let's assume the current item's JSON ($json) contains the data needed for the calculation.\n// Since the previous script returned an *array* of results, and only one of those results\n// contains the latest candlestick data, this setup is still flawed for *historical* TA.\n\n// **MOST LIKELY SCENARIO FIX (Assuming the historical candle data is in $json.candles):**\nconst data = typeof $json === \"string\" ? JSON.parse($json) : $json;\nconst candles = data?.candles || []; // <--- This needs to be the actual historical array\n\n// **IF the input is the actual array of historical candles:**\n// const data = $json; \n// const candles = Array.isArray(data) ? data : data?.candles || []; \n\n// For simplicity and to match the original code's structure, we correct the variable name:\n// **CORRECTION:** Change 'query' to '$json' in the first line.\nconst inputData = typeof $json === \"string\" ? JSON.parse($json) : $json;\nconst candles = inputData?.candles || [];\n\nif (!Array.isArray(candles) || candles.length === 0) {\n    // Check if the input is one of the *latest* single candle objects from the previous script\n    if (inputData.endpoint === 'candlestick' && inputData.data && inputData.data.close) {\n        return [{ json: { error: \"Input is a single candle object. Technical Analysis requires an array of historical candle data.\" } }];\n    }\n    return [{ json: { error: \"No historical candle data provided in array format.\" } }];\n}\n\n// Helper: EMA calculation (rest of the helpers are unchanged)\nfunction calculateEMA(data, period) {\n    const k = 2 / (period + 1);\n    let emaArray = [];\n    let emaPrev;\n\n    data.forEach((price, i) => {\n        if (i === 0) {\n            emaPrev = price;\n            emaArray.push(emaPrev);\n        } else {\n            let ema = price * k + emaPrev * (1 - k);\n            emaArray.push(ema);\n            emaPrev = ema;\n        }\n    });\n    return emaArray;\n}\n\n// Helper: RSI calculation (using the corrected version from my previous answer)\nfunction calculateRSI(data, period) {\n    let rsiArray = new Array(data.length).fill(null);\n    if (data.length <= period) return rsiArray;\n\n    let gains = 0;\n    let losses = 0;\n    \n    for (let i = 1; i <= period; i++) {\n        const diff = data[i] - data[i - 1];\n        if (diff >= 0) {\n            gains += diff;\n        } else {\n            losses -= diff;\n        }\n    }\n    \n    let avgGain = gains / period;\n    let avgLoss = losses / period;\n    let rs = avgLoss === 0 ? (avgGain > 0 ? Infinity : 0) : avgGain / avgLoss;\n    rsiArray[period] = 100 - 100 / (1 + rs);\n\n    for (let j = period + 1; j < data.length; j++) {\n        const delta = data[j] - data[j - 1];\n        let gain = delta > 0 ? delta : 0;\n        let loss = delta < 0 ? -delta : 0;\n        \n        avgGain = (avgGain * (period - 1) + gain) / period;\n        avgLoss = (avgLoss * (period - 1) + loss) / period;\n        \n        rs = avgLoss === 0 ? (avgGain > 0 ? Infinity : 0) : avgGain / avgLoss;\n        rsiArray[j] = 100 - 100 / (1 + rs);\n    }\n\n    return rsiArray;\n}\n\n// Extract close prices (assuming the candle objects have a 'close' property)\nconst closePrices = candles.map(c => parseFloat(c.close));\n\n// Calculate indicators\nconst ema12 = calculateEMA(closePrices, 12);\nconst ema26 = calculateEMA(closePrices, 26);\nconst macd = ema12.map((val, i) => (val - (ema26[i] || 0)));\n\nconst nonNullMacd = macd.filter(v => v !== null && v !== undefined);\nconst macdSignal = calculateEMA(nonNullMacd, 9);\nconst rsi = calculateRSI(closePrices, 14);\n\n// Compose output\n\nconst output = candles.map((c, i) => {\n    const signalIndex = i - (macd.length - nonNullMacd.length);\n    \n    return {\n        timestamp: c.openTime || c.timestamp || Date.now(),\n        close: parseFloat(c.close),\n        ema12: ema12[i] || null,\n        ema26: ema26[i] || null,\n        macd: macd[i] || null,\n        macdSignal: signalIndex >= 0 ? macdSignal[signalIndex] : null,\n        rsi: rsi[i] || null,\n    };\n});\n\n// Return the result wrapped in the standard n8n output structure\nreturn [{ json: { response: JSON.stringify(output) } }];\n\n// --- End of Corrected TA Code ---"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2256,
+        64
+      ],
+      "id": "c8649e3a-05db-4b8a-8456-dc253b654700",
+      "name": "Technical Indicators"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSearXng",
+      "typeVersion": 1,
+      "position": [
+        -3728,
+        288
+      ],
+      "id": "924c981b-bfa8-40cd-9239-77312e781fee",
+      "name": "SearXNG",
+      "credentials": {
+        "searXngApi": {
+          "id": "GdxVcHHsVzCfazYA",
+          "name": "SearXNG account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -3840,
+        288
+      ],
+      "id": "0e31e93e-68e9-4837-a6ff-a1de34729d1c",
+      "name": "Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Date Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Current Price": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Candlestick Data": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Current Funding Rate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Historical Funding Rate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contract Details": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Trades List": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Order Book Depth": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Set Vars",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Vars": {
+      "main": [
+        [
+          {
+            "node": "Get Current Price",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Candlestick Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Current Funding Rate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Historical Funding Rate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Contract Details",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Trades List",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Order Book Depth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields6": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Prepare Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Data": {
+      "main": [
+        [
+          {
+            "node": "Technical Indicators",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Technical Indicators": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SearXNG": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6cb1443e-c1e5-4e64-b3e4-20ef7d25c199",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
+  },
+  "id": "jhRYyFPhR2wEjWWv",
+  "tags": [
+    {
+      "createdAt": "2025-09-26T05:24:50.234Z",
+      "updatedAt": "2025-09-26T05:24:50.234Z",
+      "id": "OGUR7X5edzpVLq0x",
+      "name": "Crypto"
+    }
+  ]
+}

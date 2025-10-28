@@ -1,0 +1,139 @@
+{
+  "name": "AI Digital Notes Taker",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "id": "start-node"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        460,
+        300
+      ],
+      "id": "chat-trigger",
+      "webhookId": "new-chat-webhook"
+    },
+    {
+      "parameters": {
+        "model": "chatgpt",
+        "task": "You are an AI assistant that converts handwritten notes into digital Markdown files. When you receive an image, your goal is to: 1. Extract the text from the image. 2. Ask the user to classify the text. 3. Generate a filename and tags based on the user's classification. 4. Ask the user to confirm the final text, filename, and tags. 5. Save the result to a specified location. You must use the tools provided to you to accomplish these steps.",
+        "tools": [
+          "analyze-image-tool",
+          "google-drive-tool"
+        ],
+        "options": {}
+      },
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        700,
+        300
+      ],
+      "id": "ai-agent",
+      "credentials": {
+        "openAiApi": {
+          "id": "placeholder-credentials",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": "gemini-pro-vision",
+        "prompt": "Extract the handwritten text from this image.",
+        "options": {}
+      },
+      "name": "Analyze Image with Gemini",
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        940,
+        200
+      ],
+      "id": "analyze-image-tool",
+      "notes": "This tool is used by the AI Agent to extract text from an image using Google Gemini.",
+      "credentials": {
+        "googleGeminiApi": {
+          "id": "placeholder-credentials",
+          "name": "Google Gemini account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "upload",
+        "driveId": "={{ $json.driveId }}",
+        "folderId": "={{ $json.destinationFolderId }}",
+        "inputDataFieldName": "data",
+        "fileName": "={{ $json.fileName }}.md",
+        "options": {}
+      },
+      "name": "Google Drive Tool",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        940,
+        600
+      ],
+      "id": "google-drive-tool",
+      "notes": "This tool is used by the AI Agent to save the final Markdown file to Google Drive.",
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "placeholder-credentials",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Analyze Image Tool",
+              "type": "main"
+            }
+          ],
+        [
+          {
+            "node": "Google Drive Tool",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "errorWorkflow": "4yLkEDJXBa3iEscQ"
+  },
+  "id": "2"
+}

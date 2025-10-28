@@ -1,0 +1,298 @@
+{
+  "name": "TimeSheet Delivery CSV",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "timesheet-delivery",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -464,
+        208
+      ],
+      "id": "9e234aff-c808-4fa6-8f34-ab9526ec86de",
+      "name": "Webhook",
+      "webhookId": "f788a3b8-232f-48a2-a0ca-f1c529faaa30"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1viVDVz6Jf1Z0XT6NiwnmQQWDhWK-fk3g2U6KivWASv8",
+          "mode": "list",
+          "cachedResultName": "Projekte",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1viVDVz6Jf1Z0XT6NiwnmQQWDhWK-fk3g2U6KivWASv8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1264453159,
+          "mode": "list",
+          "cachedResultName": "Timesheets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1viVDVz6Jf1Z0XT6NiwnmQQWDhWK-fk3g2U6KivWASv8/edit#gid=1264453159"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -240,
+        208
+      ],
+      "id": "7261237d-f670-48a9-ad1a-553f832b18d5",
+      "name": "GetAllTimeSheets",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "jXGi51URzTadrk07",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Timesheet Aggregator (Date Range)\n * Groups timesheet rows by user + (Projekt + Tätigkeit + Datum + Start + Ende),\n * optional date range is read from the incoming Webhook body.\n * NOW INCLUDES TRAVEL TIME: Reise field is counted in total billable hours and tracked separately.\n */\nconst body = $('Webhook').first().json.body || {};\nconst startDateStr = body.startDate || null; // Optional dd.mm.yyyy\nconst endDateStr   = body.endDate   || null; // Optional dd.mm.yyyy\n\nconst parseDate = (dateStr) => {\n  // Expecting dd.mm.yyyy\n  const parts = String(dateStr || '').split('.');\n  if (parts.length !== 3) return new Date('Invalid');\n  const [d, m, y] = parts;\n  return new Date(`${y}-${m}-${d}`);\n};\n\nconst isInRange = (date, start, end) => {\n  if (start && date < start) return false;\n  if (end && date > end) return false;\n  return true;\n};\n\nconst addOrUpdateProject = (projects, projekt, taetigkeit, datum, start, ende, stunden, reise) => {\n  const existing = projects.find(\n    p =>\n      p.projekt === projekt &&\n      p.taetigkeit === taetigkeit &&\n      p.datum === datum &&\n      p.start === start &&\n      p.ende === ende\n  );\n  if (existing) {\n    existing.stunden += stunden;\n    existing.reise += reise;\n  } else {\n    projects.push({ projekt, taetigkeit, datum, start, ende, stunden, reise });\n  }\n};\n\nconst startDate = startDateStr ? parseDate(startDateStr) : null;\nconst endDate   = endDateStr   ? parseDate(endDateStr)   : null;\n\nconst grouped = {};\n\nfor (const { json: row } of items) {\n  const rowDate = parseDate(row['Datum']);\n  if (String(rowDate) === 'Invalid Date') continue;\n  if (!isInRange(rowDate, startDate, endDate)) continue;\n\n  const name   = row['Name'];\n  const hours  = Number(row['Stunden']) || 0;\n  const travelHours = Number(row['Reise']) || 0; // NEW: Travel time from Reise field\n  const proj   = row['Projekt'];\n  const taet   = row['Tätigkeit']; // exact header spelling in the sheet\n  const datum  = row['Datum'];\n  const start  = row['Start'];\n  const ende   = row['Ende'];\n\n  if (!grouped[name]) {\n    grouped[name] = {\n      username: name,\n      projects: [],\n      totalHours: 0,\n      totalTravelHours: 0 // NEW: Separate tracking for travel time\n    };\n  }\n  addOrUpdateProject(grouped[name].projects, proj, taet, datum, start, ende, hours, travelHours);\n  grouped[name].totalHours += hours + travelHours; // UPDATED: Include Reise in totalHours\n  grouped[name].totalTravelHours += travelHours; // NEW: Track travel time separately\n}\n\nreturn Object.values(grouped).map(userData => ({ json: userData }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        208
+      ],
+      "id": "6b40e499-caaf-4df0-b198-c99e5ecf6149",
+      "name": "Timesheet Aggregator (Date Range)",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * CSV Base64 Generator (escaped)\n * Builds a CSV per user with proper CSV escaping and encodes as Base64.\n */\nconst body        = $('Webhook').first().json.body || {};\nconst phoneMap    = body?.users || {}; // { phone: \"Name\" }\nconst instance    = body?.instance;\nconst startDate   = body?.startDate || null;\nconst endDate     = body?.endDate || null;\n\nconst timesheets  = items.map(i => i.json); // aggregated per user from previous node\nconst results     = [];\n\nconst csvCell = (val) => {\n  if (val === null || val === undefined) return '';\n  const s = String(val);\n  if (/[\",\\n]/.test(s)) return '\"' + s.replace(/\"/g, '\"\"') + '\"';\n  return s;\n};\n\nfor (const [phone, name] of Object.entries(phoneMap)) {\n  const sheet = timesheets.find(ts => (ts.username || ts.name) === name);\n  if (!sheet) {\n    // produce an item marking this recipient as skipped (no rows)\n    results.push({\n      json: {\n        instance, phone, name,\n        skipped: true,\n        reason: 'No rows for user',\n        fileName: null,\n        message: null,\n        fileData: null\n      }\n    });\n    continue;\n  }\n\n  const message = `Hallo ${name},\\n\\nanbei findest du deine aktuelle Arbeitszeitenübersicht.\\nVielen Dank für deinen Einsatz und deine zuverlässige Arbeit – wir schätzen das sehr!\\n\\nFalls du Fragen zu den Angaben hast, melde dich bitte jederzeit bei uns.\\n\\nViele Grüße\\nDein Energy44 Team\\n\\nCrew Love is True Love`;\n\n  let lines = [];\n\n  // Combine User + Zeitraum into one row, occupying all columns\n  const headerInfo = `User: ${name} | Zeitraum: ${startDate || '-'} bis ${endDate || '-'}`;\n  lines.push([headerInfo, '', '', '', '', '', ''].map(csvCell).join(','));\n\n  lines.push('');\n  // Header now includes Reise column\n  lines.push(['Datum','Start','Ende','Projekt','Tätigkeit','Stunden','Reise'].map(csvCell).join(','));\n\n  for (const proj of sheet.projects || []) {\n    lines.push([\n      proj.datum,\n      proj.start,\n      proj.ende,\n      proj.projekt,\n      proj.taetigkeit,\n      proj.stunden,\n      proj.reise || 0  // Include Reise column in project data\n    ].map(csvCell).join(','));\n  }\n\n  lines.push('');\n  // Separate totals: working hours, travel time\n  const totalTravelHours = sheet.totalTravelHours || 0;\n  const totalWorkingHours = sheet.totalHours - totalTravelHours;\n  lines.push(['Gesamt','','','','', totalWorkingHours, totalTravelHours].map(csvCell).join(','));\n\n  // NEW LINE: Combined billable hours\n  lines.push(['Insgesamt verrechenbare Stunden','','','','','', sheet.totalHours].map(csvCell).join(','));\n\n  const csvContent = lines.join('\\n');\n  const fileName   = `${name.replace(/\\s+/g, '_')}_Timesheet.csv`;\n  const fileData   = Buffer.from(csvContent, 'utf-8').toString('base64');\n\n  results.push({\n    json: {\n      instance, phone, name,\n      skipped: false,\n      reason: null,\n      fileName,\n      message,\n      fileData\n    }\n  });\n}\n\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        208
+      ],
+      "id": "1bb07d99-7e15-43f9-b91a-50ec4e5c2bf8",
+      "name": "CSV Base64 Generator"
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 2,
+      "position": [
+        432,
+        208
+      ],
+      "id": "8ff3e5fa-a5c3-400b-8e5c-bb0b73af2db0",
+      "name": "Loop (Split In Batches)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://devhh.vps.webdock.cloud:8080/message/sendMedia/{{$json.instance}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "66165C63EEFB-4620-84CE-43A1C5DD5CDF"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{$json.phone}}"
+            },
+            {
+              "name": "mediatype",
+              "value": "document"
+            },
+            {
+              "name": "mimetype",
+              "value": "text/csv"
+            },
+            {
+              "name": "fileName",
+              "value": "={{$json.fileName}}"
+            },
+            {
+              "name": "caption",
+              "value": "={{$json.message}}"
+            },
+            {
+              "name": "media",
+              "value": "={{$json.fileData}}"
+            },
+            {
+              "name": "delay",
+              "value": "={{2000}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        656,
+        16
+      ],
+      "id": "e839b7f8-8a8a-4b3d-8642-34a86cbc267e",
+      "name": "Evolution-send-media-file",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Summarize Results\n * Builds a single JSON summary for Webhook response.\n */\nconst body      = $('Webhook').first().json.body || {};\nconst phoneMap  = body.users || {};\nconst generated = $('CSV Base64 Generator').all().map(i => i.json);\nconst sent      = $('Evolution-send-media-file').all().map(i => i.json);\n\n// Index generated by phone for quick lookup\nconst genByPhone = new Map(generated.map(g => [g.phone, g]));\n\nconst successes = [];\nconst failures  = [];\nconst skipped   = [];\n\n// Iterate over each intended recipient (phoneMap)\nfor (const [phone, name] of Object.entries(phoneMap)) {\n  const gen = genByPhone.get(phone);\n  if (!gen || gen.skipped) {\n    skipped.push({ phone, name, reason: gen?.reason || 'No rows for user' });\n    continue;\n  }\n  // Find corresponding HTTP result\n  const match = sent.find(s => String(s?.body?.to || s?.request?.number || s?.json?.number || '').includes(phone) || s?.request?.body?.number === phone || s?.request?.number === phone);\n  const status = (match && (match.statusCode || match.status)) || null;\n  const ok = status && status >= 200 && status < 300;\n\n  if (ok) {\n    successes.push({ phone, name, statusCode: status, fileName: gen.fileName });\n  } else {\n    failures.push({\n      phone,\n      name,\n      statusCode: status || 'unknown',\n      error: match?.body?.error || match?.body || match?.message || 'send failed',\n      fileName: gen.fileName\n    });\n  }\n}\n\nreturn [{\n  json: {\n    instance: body.instance || null,\n    counts: {\n      total: Object.keys(phoneMap).length,\n      attempted: successes.length + failures.length,\n      ok: successes.length,\n      failed: failures.length,\n      skipped: skipped.length\n    },\n    successes,\n    failures,\n    skipped\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        208
+      ],
+      "id": "ba03febd-c453-4afa-ad04-7815fe571ca4",
+      "name": "Summarize Results"
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "seconds"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        880,
+        192
+      ],
+      "id": "ad403ca6-1b29-452c-a8c4-0842f867e3aa",
+      "name": "Wait 2s",
+      "webhookId": "0a5b160f-2ad5-4543-92c8-b27b6dcb4695"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "GetAllTimeSheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetAllTimeSheets": {
+      "main": [
+        [
+          {
+            "node": "Timesheet Aggregator (Date Range)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Timesheet Aggregator (Date Range)": {
+      "main": [
+        [
+          {
+            "node": "CSV Base64 Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CSV Base64 Generator": {
+      "main": [
+        [
+          {
+            "node": "Loop (Split In Batches)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop (Split In Batches)": {
+      "main": [
+        [
+          {
+            "node": "Evolution-send-media-file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Summarize Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution-send-media-file": {
+      "main": [
+        [
+          {
+            "node": "Wait 2s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2s": {
+      "main": [
+        [
+          {
+            "node": "Loop (Split In Batches)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bb4c6d87-14c8-45a3-8d5b-657f4f991853",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
+  },
+  "id": "o38YcyDN6VfuNRXZ",
+  "tags": [
+    {
+      "createdAt": "2025-08-16T21:13:48.819Z",
+      "updatedAt": "2025-08-16T21:13:48.819Z",
+      "id": "EkiLghUHuZd4pslz",
+      "name": "Energy44"
+    }
+  ]
+}
