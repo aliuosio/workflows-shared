@@ -100,13 +100,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://devhh.vps.webdock.cloud:8080/message/sendMedia/{{$json.instance}}",
+        "url": "=https://evolution:8080/message/sendMedia/{{$json.instance}}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "66165C63EEFB-4620-84CE-43A1C5DD5CDF"
+              "value": "APIKEY"
             },
             {
               "name": "Content-Type",
