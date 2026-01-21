@@ -1,0 +1,224 @@
+{
+  "name": "6.Jobs Fit Chat",
+  "nodes": [
+    {
+      "parameters": {
+        "description": "Internal reasoning tool for the AI agent. Scores job postings against the user’s profile from the Vector Store, producing an integer match percentage and a concise explanation. Also answers recruiter questions about skills and experience. All reasoning is internal; outputs are factual, deterministic, and based only on Vector Store data."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        480,
+        224
+      ],
+      "id": "9c94c5c0-b8bd-4a7d-87d4-26fd1e01b8b2",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Below is a **further compressed, token-aware revision** of your prompt.\n**No output logic, rules, or guarantees are lost.**\nRedundancies are removed, wording tightened, structure flattened for lower token cost.\n\n---\n\n## 🔹 TOKEN-AWARE MASTER PROMPT (FINAL)\n\n### ROLE\n\nYou are a **Senior IT Recruiter & Technical Analyst (IQ 120)**.\nYou speak **direct, professional recruiter language**.\nGoal: **accurate candidate ↔ job matching** or **expert technical answers**.\n\n---\n\n### LANGUAGE RULE\n\n* **Reply in the same language as the user input** (German or English).\n* Do not mix languages.\n\n---\n\n### DATA SOURCE (MANDATORY) – QDRANT\n\n1. **Always search Qdrant first** for the candidate profile.\n2. Data = **skills, projects, tools, tech stack**.\n3. Use this data as **hard evidence**.\n4. If no profile exists, return exactly:\n   `STATUS: NO_PROFILE_DATA_FOUND`\n\n---\n\n### INPUT CLASSIFICATION (NO QUESTIONS)\n\nIf input contains **any** of the following (DE + EN):\n\n`PHP, Magento, Symfony, Laravel, REST, API, Backend, Frontend, Fullstack, Developer, Engineer, Software Engineer, Entwickler, Softwareentwickler, Webentwickler, Programmierer, Schnittstelle`\n\n→ **TYPE = STELLENANZEIGE (JOB OFFER)**\n→ **Always calculate & show Match Score**\n\nElse\n→ **TYPE = ALLGEMEINE FRAGE / GENERAL QUESTION**\n\nRespond immediately.\n\n---\n\n## 🧩 STELLENANZEIGE – OUTPUT (STRICT ORDER)\n\n1. **Match Score: XX %** *(always first)*\n2. Job-Mapping (requirements ↔ skills)\n3. Concrete project examples\n4. Strengths & Gaps (honest, recruiter view)\n5. Skill-transfer assessment if tech is missing\n\nTone: **clear, advisory, no fluff**.\n\n---\n\n## 📐 MATCH SCORE – WEIGHTED MATH (MANDATORY)\n\n### Fallback\n\nIf input = `STATUS: NO_PROFILE_DATA_FOUND`\n→ **Final Score = 1**\n\n---\n\n### Calculation (Exact Weights)\n\n* **Skills (45 %)**: `PHP / Magento / Linux` → × 0.45\n* **Role Fit (25 %)**: ERP / Enterprise / Dynamics 365 → × 0.25\n* **Seniority (20 %)**: 20+ years experience → × 0.20\n* **Tooling (10 %)**: `C# / Azure / Windows Server` → × 0.10\n\nSum values → **integer 1–100**.\nVerify math consistency.\n\n---\n\n## 🧠 ALLGEMEINE FRAGE / GENERAL QUESTION\n\n* No Match Score\n* No HR framing\n* Direct expert answer\n* Best practices, architecture, trade-offs\n* Senior, hands-on tone\n\n---\n\n### GLOBAL RULES\n\n* Always recruiter-style, straight-forward\n* No meta comments\n* No job portals\n* Clear headings\n* Same output structure in DE & EN\n\n---\n",
+          "maxIterations": 30
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        336,
+        0
+      ],
+      "id": "3c017a07-f6f0-43ba-a439-e22c4cc2c264",
+      "name": "Jobs Fit"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "90b4a230-d577-4451-aef2-369924b6f822",
+      "name": "Chat",
+      "webhookId": "2faf8edb-f103-4860-8ef5-6b95814421eb"
+    },
+    {
+      "parameters": {
+        "tableName": "Job_Fit_History",
+        "contextWindowLength": 500
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        224
+      ],
+      "id": "fc82ac3a-ef22-4099-a13b-61766cf59a41",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "u76fuDga6pMPkVOv",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        688,
+        432
+      ],
+      "id": "4a15a331-315d-4fa2-9c37-b8a956748d51",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "fExem6aZ9vIXlYA2",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "# Qdrant Vector Store – Kandidaten-Skills\n\n**Beschreibung:**  \nDer Qdrant Vector Store speichert **repräsentative Vektor-Embeddings von Kandidatenprofilen**, insbesondere deren **technische Skills, Projekterfahrungen und Tool-Expertise**. Jeder Kandidat wird als **hochdimensionaler Vektor** abgebildet, sodass **ähnliche Kandidaten oder relevante Skills schnell und präzise gefunden** werden können.  \n\n**Zweck im Recruiting-Prompt:**  \n- Ermöglicht dem Modell, vor jeder Analyse **relevante Kandidateninformationen** zu laden.  \n- Unterstützt das **Think Tool** bei der aktiven Bewertung von Jobanforderungen gegenüber Kandidaten-Skills.  \n- Macht das Matching zwischen Job und Kandidat **datenbasiert, nachvollziehbar und reproduzierbar**.  \n\n**Beispielhafte Inhalte:**  \n- Programmiersprachen (PHP, Python, JavaScript)  \n- Frameworks (Magento, Symfony, Laravel)  \n- APIs / Schnittstellen (REST, GraphQL)  \n- Frontend / Backend / Fullstack Expertise  \n- Projektbezogene Erfahrungen (E-Commerce, CI/CD, Cloud)  \n\n**Hinweis:**  \nDer Vector Store dient **ausschließlich als interner Referenzspeicher für Kandidateninformationen**. Das Modell **greift automatisch auf die relevanten Vektoren zu**, bevor es Job-Matching oder fachliche Analysen erstellt.\n",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "skills",
+          "mode": "list",
+          "cachedResultName": "skills"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        608,
+        224
+      ],
+      "id": "3f996c74-d92e-4d10-a394-93e3bab60dd2",
+      "name": "Qdrant Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "pEzihld59blFRrep",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "ministral-14b-latest",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        224,
+        224
+      ],
+      "id": "2bfe1a93-b1df-4813-8d21-3dd26fecbc33",
+      "name": "Mistral",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "11LMbBUj7iiIvzSB",
+          "name": "Mistral Cloud account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Jobs Fit",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat": {
+      "main": [
+        [
+          {
+            "node": "Jobs Fit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Jobs Fit",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "Jobs Fit",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Jobs Fit",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "6215c3f7-d5c9-496c-af8a-f93541ddbffb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9984e2e466df2329f1cac74dac5667eec63d2dae2a6167aaec8bc5562b150194"
+  },
+  "id": "Y_nTM4FxSWNlcdxjO7V7l",
+  "tags": [
+    {
+      "updatedAt": "2026-01-20T07:42:18.200Z",
+      "createdAt": "2026-01-20T07:42:18.200Z",
+      "id": "9IJ9tTz9SJV8l39N",
+      "name": "jobs"
+    }
+  ]
+}
